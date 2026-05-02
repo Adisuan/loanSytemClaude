@@ -1,0 +1,206 @@
+<%- include('partials/header', { title: 'แดชบอร์ด', page: 'dashboard', breadcrumb: 'แดชบอร์ด' }) %>
+
+<!-- Stats Row -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start justify-content-between mb-3">
+          <div class="icon-box bg-primary bg-opacity-10 text-primary">
+            <i class="bi bi-file-earmark-text"></i>
+          </div>
+          <span class="badge bg-success bg-opacity-15 text-success">+12% <i class="bi bi-arrow-up"></i></span>
+        </div>
+        <div class="h3 fw-700 mb-0">1,248</div>
+        <div class="text-muted mt-1 fs-85">สินเชื่อทั้งหมด</div>
+        <div class="progress mt-3">
+          <div class="progress-bar bg-primary" style="width:78%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start justify-content-between mb-3">
+          <div class="icon-box bg-success bg-opacity-10 text-success">
+            <i class="bi bi-check-circle"></i>
+          </div>
+          <span class="badge bg-success bg-opacity-15 text-success">+8% <i class="bi bi-arrow-up"></i></span>
+        </div>
+        <div class="h3 fw-700 mb-0">892</div>
+        <div class="text-muted mt-1 fs-85">อนุมัติแล้ว</div>
+        <div class="progress mt-3">
+          <div class="progress-bar bg-success" style="width:62%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start justify-content-between mb-3">
+          <div class="icon-box bg-warning bg-opacity-10 text-warning">
+            <i class="bi bi-hourglass-split"></i>
+          </div>
+          <span class="badge bg-warning bg-opacity-15 text-warning">รออนุมัติ</span>
+        </div>
+        <div class="h3 fw-700 mb-0">143</div>
+        <div class="text-muted mt-1 fs-85">รออนุมัติ</div>
+        <div class="progress mt-3">
+          <div class="progress-bar bg-warning" style="width:32%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start justify-content-between mb-3">
+          <div class="icon-box bg-info bg-opacity-10 text-info">
+            <i class="bi bi-currency-exchange"></i>
+          </div>
+          <span class="badge bg-danger bg-opacity-15 text-danger">-3% <i class="bi bi-arrow-down"></i></span>
+        </div>
+        <div class="h3 fw-700 mb-0">฿24.5M</div>
+        <div class="text-muted mt-1 fs-85">ยอดสินเชื่อรวม</div>
+        <div class="progress mt-3">
+          <div class="progress-bar bg-info" style="width:55%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <!-- Recent Loans Table -->
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-body p-0">
+        <div class="d-flex align-items-center justify-content-between p-4 pb-3">
+          <h6 class="mb-0 fw-600">รายการสินเชื่อล่าสุด</h6>
+          <a href="/loans" class="btn btn-sm btn-outline-primary">ดูทั้งหมด</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-4">เลขที่สัญญา</th>
+                <th>ชื่อผู้กู้</th>
+                <th>ประเภท</th>
+                <th>วงเงิน</th>
+                <th>สถานะ</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% loans.forEach(loan => { %>
+              <tr>
+                <td class="ps-4 fw-500">
+                  <span class="text-primary"><%= loan.id %></span>
+                </td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-600 avatar-sm"
+                         style="background:<%= loan.color %>;">
+                      <%= loan.name.charAt(0) %>
+                    </div>
+                    <%= loan.name %>
+                  </div>
+                </td>
+                <td><span class="text-muted"><%= loan.type %></span></td>
+                <td class="fw-500">฿<%= loan.amount %></td>
+                <td>
+                  <% if (loan.status === 'อนุมัติ') { %>
+                    <span class="badge-status bg-success bg-opacity-15 text-success"><i class="bi bi-check-circle-fill me-1"></i><%= loan.status %></span>
+                  <% } else if (loan.status === 'รออนุมัติ') { %>
+                    <span class="badge-status bg-warning bg-opacity-20 text-warning"><i class="bi bi-clock-fill me-1"></i><%= loan.status %></span>
+                  <% } else if (loan.status === 'ปฏิเสธ') { %>
+                    <span class="badge-status bg-danger bg-opacity-15 text-danger"><i class="bi bi-x-circle-fill me-1"></i><%= loan.status %></span>
+                  <% } else { %>
+                    <span class="badge-status bg-secondary bg-opacity-15 text-secondary"><%= loan.status %></span>
+                  <% } %>
+                </td>
+                <td>
+                  <a href="/loans/<%= loan.id %>" class="btn btn-sm btn-light border-0">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                </td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right column -->
+  <div class="col-lg-4 d-flex flex-column gap-3">
+    <!-- Quick Actions -->
+    <div class="card">
+      <div class="card-body p-4">
+        <h6 class="mb-3 fw-600">การดำเนินการด่วน</h6>
+        <div class="d-grid gap-2">
+          <a href="/loans/apply" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>ยื่นขอสินเชื่อใหม่
+          </a>
+          <a href="/loans?status=pending" class="btn btn-outline-warning">
+            <i class="bi bi-hourglass me-2"></i>ตรวจสอบคำขอที่รออนุมัติ
+            <span class="badge bg-warning text-dark ms-1">143</span>
+          </a>
+          <a href="/payments" class="btn btn-outline-success">
+            <i class="bi bi-cash me-2"></i>บันทึกการชำระเงิน
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loan Type Breakdown -->
+    <div class="card flex-grow-1">
+      <div class="card-body p-4">
+        <h6 class="mb-3 fw-600">สัดส่วนประเภทสินเชื่อ</h6>
+        <div class="d-flex flex-column gap-3">
+          <div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="fs-85">สินเชื่อบุคคล</span>
+              <span class="text-muted fs-82">48%</span>
+            </div>
+            <div class="progress">
+              <div class="progress-bar bg-primary" style="width:48%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="fs-85">สินเชื่อธุรกิจ</span>
+              <span class="text-muted fs-82">30%</span>
+            </div>
+            <div class="progress">
+              <div class="progress-bar bg-info" style="width:30%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="fs-85">สินเชื่อบ้าน</span>
+              <span class="text-muted fs-82">16%</span>
+            </div>
+            <div class="progress">
+              <div class="progress-bar bg-success" style="width:16%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="fs-85">สินเชื่อรถยนต์</span>
+              <span class="text-muted fs-82">6%</span>
+            </div>
+            <div class="progress">
+              <div class="progress-bar bg-warning" style="width:6%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

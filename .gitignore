@@ -8,7 +8,7 @@
 /test
 /test.json
 /.env
-/api_b/node_modules/
+/node_modules/
 /backendNew/node_modules/
 /backend_b/node_modules/
 /newFrontend/node_modules/

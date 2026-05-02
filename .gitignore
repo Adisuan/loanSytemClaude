@@ -1,0 +1,15 @@
+**/node_modules/
+# /backend/.env
+
+/text.txt
+/test.ejs
+/test.js
+/test2.js
+/test
+/test.json
+/.env
+/api_b/node_modules/
+/backendNew/node_modules/
+/backend_b/node_modules/
+/newFrontend/node_modules/
+pm2.config.js

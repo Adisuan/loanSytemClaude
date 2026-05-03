@@ -165,6 +165,10 @@ body { font-family: 'Sarabun', sans-serif; background: #f4f6fb; }
 /* ============================================================
    Utility — Background tints
    ============================================================ */
+/* Custom bg-opacity values (Bootstrap default มีแค่ 10/25/50/75/100) */
+.bg-opacity-15 { --bs-bg-opacity: .15; }
+.bg-opacity-20 { --bs-bg-opacity: .20; }
+
 .bg-primary-tint  { background: #eff6ff; }
 .bg-success-tint  { background: #f0fdf4; }
 .bg-warning-tint  { background: #fefce8; }
@@ -195,3 +199,149 @@ body { font-family: 'Sarabun', sans-serif; background: #f4f6fb; }
 .nav-tabs-bottom    { border-bottom: 2px solid #e5e7eb; }
 .nav-link-active-tab { border: none !important; border-bottom: 2px solid #3b82f6 !important; margin-bottom: -2px; }
 .nav-link-plain     { border: none !important; }
+
+/* ============================================================
+   Status tabs (responsive)
+   - Desktop: ดูเหมือน nav-tabs แบบเส้นใต้
+   - Mobile: เปลี่ยนเป็น pill ที่ wrap หลายบรรทัดได้
+   ============================================================ */
+.status-tabs {
+  display: flex; flex-wrap: nowrap; gap: .25rem;
+  border-bottom: 2px solid #e5e7eb;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.status-tabs::-webkit-scrollbar { display: none; }
+.status-tab {
+  padding: .65rem 1.1rem; font-size: .9rem; white-space: nowrap;
+  color: #6b7280; text-decoration: none;
+  border-bottom: 3px solid transparent; margin-bottom: -2px;
+  display: inline-flex; align-items: center; gap: .4rem;
+  flex-shrink: 0;
+  border-top-left-radius: 8px; border-top-right-radius: 8px;
+  transition: color .15s, background .15s, border-color .15s;
+}
+.status-tab:hover {
+  color: #1a3c6e; background: #f8fafc;
+}
+.status-tab.active {
+  color: #2563eb; font-weight: 700;
+  background: #eff6ff;
+  border-bottom-color: #2563eb;
+}
+.status-tab.active .badge {
+  box-shadow: 0 0 0 1.5px #fff;
+}
+@media (max-width: 575.98px) {
+  .status-tabs {
+    flex-wrap: wrap; border-bottom: none; gap: .4rem;
+    overflow-x: visible;
+  }
+  .status-tab {
+    padding: .4rem .8rem;
+    border: 1px solid #e5e7eb; border-radius: 999px;
+    margin-bottom: 0; font-size: .82rem;
+    background: #fff;
+  }
+  .status-tab.active {
+    background: #1a3c6e; color: #fff; border-color: #1a3c6e;
+  }
+  .status-tab.active .badge {
+    background-color: rgba(255,255,255,.22) !important;
+    color: #fff !important;
+  }
+}
+
+/* ============================================================
+   Reports
+   ============================================================ */
+.report-card { transition: all .2s; cursor: pointer; height: 100%; }
+.report-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.08); }
+.report-card .icon-box-lg {
+  width: 56px; height: 56px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+}
+.report-tag {
+  font-size: .68rem; padding: .2em .55em; border-radius: 6px;
+  background: #f1f5f9; color: #475569; font-weight: 500;
+  letter-spacing: .03em;
+}
+
+.bar-chart {
+  display: flex; align-items: flex-end; gap: .75rem;
+  height: 200px; padding: .5rem 0;
+}
+.bar-chart .bar-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: .35rem; height: 100%;
+}
+.bar-chart .bar-stack {
+  width: 100%; max-width: 48px; flex: 1;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  position: relative;
+}
+.bar-chart .bar {
+  width: 100%; border-radius: 4px 4px 0 0; transition: all .2s;
+}
+.bar-chart .bar:hover { opacity: .85; }
+.bar-chart .bar-label { font-size: .72rem; color: #6b7280; }
+.bar-chart .bar-value { font-size: .7rem; color: #374151; font-weight: 600; }
+
+.donut-svg { width: 160px; height: 160px; transform: rotate(-90deg); }
+.donut-svg .donut-bg { fill: none; stroke: #e5e7eb; stroke-width: 4; }
+.donut-svg .donut-seg { fill: none; stroke-width: 4; transition: stroke-dasharray .3s; }
+
+.kpi-pill {
+  display: inline-flex; align-items: center; gap: .35rem;
+  padding: .2em .6em; border-radius: 6px;
+  font-size: .72rem; font-weight: 500;
+}
+
+.aging-card { border-left: 4px solid; padding: 1rem 1.1rem; border-radius: 10px; background: #fff; }
+.aging-card.bucket-1 { border-left-color: #facc15; background: #fefce8; }
+.aging-card.bucket-2 { border-left-color: #fb923c; background: #fff7ed; }
+.aging-card.bucket-3 { border-left-color: #f97316; background: #fff7ed; }
+.aging-card.bucket-4 { border-left-color: #ef4444; background: #fef2f2; }
+
+.report-table th { background: #f8fafc; }
+.report-row-total { background: #f1f5f9; font-weight: 600; }
+
+/* ============================================================
+   Settings
+   ============================================================ */
+.settings-nav-card { position: sticky; top: 80px; overflow: hidden; }
+.settings-nav-header { padding: 1.1rem 1.25rem; border-bottom: 1px solid #f1f5f9; }
+.settings-nav { display: flex; flex-direction: column; padding: .5rem; }
+.settings-nav-link {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .7rem .85rem; border-radius: 10px;
+  text-decoration: none; color: #374151;
+  transition: background .15s, color .15s;
+}
+.settings-nav-link:hover { background: #f8fafc; color: #1a3c6e; }
+.settings-nav-link.active { background: #eff6ff; color: #2563eb; }
+.settings-nav-link.active .text-muted { color: #2563eb !important; opacity: .8; }
+.settings-nav-link i.bi:first-child { font-size: 1.1rem; width: 22px; text-align: center; }
+
+.settings-section { background: #fff; border-radius: 14px; box-shadow: 0 1px 6px rgba(0,0,0,.06); }
+.settings-section-header {
+  padding: 1.1rem 1.5rem; border-bottom: 1px solid #f1f5f9;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+}
+.settings-section-body { padding: 1.5rem; }
+.settings-row {
+  display: flex; gap: 1.25rem; padding: 1.1rem 0;
+  border-bottom: 1px dashed #e5e7eb;
+}
+.settings-row:last-child { border-bottom: none; padding-bottom: 0; }
+.settings-row-info { flex: 0 0 240px; }
+.settings-row-info .label { font-weight: 600; font-size: .92rem; color: #1f2937; }
+.settings-row-info .help { font-size: .8rem; color: #6b7280; margin-top: .15rem; }
+.settings-row-control { flex: 1; min-width: 0; }
+
+@media (max-width: 767.98px) {
+  .settings-nav-card { position: static; }
+  .settings-row { flex-direction: column; gap: .5rem; }
+  .settings-row-info { flex: 1 1 auto; }
+}

@@ -1,0 +1,18 @@
+<div class="card settings-nav-card">
+  <div class="settings-nav-header">
+    <div class="fw-700 fs-95">ตั้งค่าระบบ</div>
+    <div class="text-muted fs-78 mt-1">เลือกหมวดที่ต้องการตั้งค่า</div>
+  </div>
+  <nav class="settings-nav">
+    <% settingsNav.forEach(s => { %>
+      <a href="/settings/<%= s.key %>" class="settings-nav-link <%= activeSection === s.key ? 'active' : '' %>">
+        <i class="bi <%= s.icon %>"></i>
+        <div class="flex-grow-1">
+          <div class="fs-88 fw-500"><%= s.label %></div>
+          <div class="text-muted fs-75"><%= s.desc %></div>
+        </div>
+        <i class="bi bi-chevron-right text-muted fs-80"></i>
+      </a>
+    <% }) %>
+  </nav>
+</div>

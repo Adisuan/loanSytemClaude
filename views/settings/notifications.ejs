@@ -1,0 +1,119 @@
+<%- include('_header') %>
+
+<div class="row g-3">
+  <div class="col-lg-4 col-xl-3"><%- include('_nav') %></div>
+  <div class="col-lg-8 col-xl-9">
+    <form method="POST" action="/settings/notifications" class="settings-section">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">ช่องทางการแจ้งเตือน</h6>
+          <div class="text-muted fs-82">เลือกช่องทางที่ใช้ส่งการแจ้งเตือนถึงลูกค้า</div>
+        </div>
+        <button class="btn btn-primary btn-sm"><i class="bi bi-check2 me-1"></i>บันทึก</button>
+      </div>
+      <div class="settings-section-body">
+        <div class="row g-3">
+          <% [
+            { key:'sms',   icon:'bi-chat-text-fill', name:'SMS',          desc:'ส่งข้อความผ่านมือถือ', on: notifications.channels.sms },
+            { key:'email', icon:'bi-envelope-fill',  name:'อีเมล',         desc:'ส่งใบเสร็จและการแจ้งเตือน', on: notifications.channels.email },
+            { key:'line',  icon:'bi-line',           name:'LINE OA',      desc:'ส่งข้อความผ่าน LINE', on: notifications.channels.line },
+            { key:'push',  icon:'bi-bell-fill',      name:'Push (Mobile)', desc:'แจ้งเตือนในแอปลูกค้า', on: notifications.channels.push },
+          ].forEach(ch => { %>
+            <div class="col-md-6">
+              <div class="d-flex align-items-center gap-3 p-3 border rounded">
+                <div class="rounded d-flex align-items-center justify-content-center" style="width:42px;height:42px;background:#eff6ff;color:#2563eb">
+                  <i class="bi <%= ch.icon %> fs-5"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="fw-600"><%= ch.name %></div>
+                  <div class="text-muted fs-78"><%= ch.desc %></div>
+                </div>
+                <div class="form-check form-switch m-0">
+                  <input class="form-check-input switch-lg" type="checkbox" <%= ch.on ? 'checked' : '' %>>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </form>
+
+    <div class="settings-section mt-3">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">เวลาแจ้งเตือน</h6>
+          <div class="text-muted fs-82">กำหนดวันที่จะแจ้งเตือนก่อนและหลังครบกำหนด</div>
+        </div>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="label">เตือนก่อนครบกำหนด</div>
+            <div class="help">ส่งล่วงหน้ากี่วัน (เลือกได้หลายค่า)</div>
+          </div>
+          <div class="settings-row-control">
+            <div class="d-flex flex-wrap gap-2">
+              <% [1,3,5,7,10,14].forEach(d => { %>
+                <label class="badge <%= notifications.reminderDaysBefore.includes(d) ? 'bg-primary' : 'bg-light text-dark border' %>" style="cursor:pointer;padding:.5em .9em;">
+                  <input type="checkbox" hidden <%= notifications.reminderDaysBefore.includes(d) ? 'checked' : '' %>> <%= d %> วัน
+                </label>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="label">เตือนหลังครบกำหนด</div>
+            <div class="help">ส่งติดตามหลังเลยกำหนดกี่วัน</div>
+          </div>
+          <div class="settings-row-control">
+            <div class="d-flex flex-wrap gap-2">
+              <% [1,3,7,15,30,60].forEach(d => { %>
+                <label class="badge <%= notifications.overdueDaysAfter.includes(d) ? 'bg-danger' : 'bg-light text-dark border' %>" style="cursor:pointer;padding:.5em .9em;">
+                  <input type="checkbox" hidden <%= notifications.overdueDaysAfter.includes(d) ? 'checked' : '' %>> <%= d %> วัน
+                </label>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">เวลาส่ง</div><div class="help">ส่งทุกวันที่เวลานี้</div></div>
+          <div class="settings-row-control">
+            <input class="form-control" type="time" value="09:00" style="max-width:200px">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section mt-3">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">เทมเพลตข้อความ</h6>
+          <div class="text-muted fs-82">ตัวแปรที่ใช้ได้: <code>{ชื่อผู้กู้}</code> <code>{เลขสัญญา}</code> <code>{วันที่}</code> <code>{ยอดเงิน}</code> <code>{จำนวนวัน}</code></div>
+        </div>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">เตือนก่อนครบกำหนด</div></div>
+          <div class="settings-row-control">
+            <textarea class="form-control" rows="3"><%= notifications.templates.reminder %></textarea>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">ติดตามหนี้ค้าง</div></div>
+          <div class="settings-row-control">
+            <textarea class="form-control" rows="3"><%= notifications.templates.overdue %></textarea>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">ยืนยันการชำระ</div></div>
+          <div class="settings-row-control">
+            <textarea class="form-control" rows="3"><%= notifications.templates.receipt %></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

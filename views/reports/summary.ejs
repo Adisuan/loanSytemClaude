@@ -1,0 +1,204 @@
+<%- include('../partials/header', { title: 'รายงานสรุปสินเชื่อ', page: 'reports-summary', breadcrumb: 'รายงานสรุปสินเชื่อ' }) %>
+
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+  <div>
+    <a href="/reports" class="text-muted text-decoration-none fs-85"><i class="bi bi-arrow-left"></i> กลับไปยังศูนย์รายงาน</a>
+    <h5 class="mb-0 fw-700 mt-1">รายงานสรุปสินเชื่อ</h5>
+    <p class="text-muted mb-0 fs-85">ภาพรวมพอร์ตสินเชื่อทั้งหมด ณ วันที่ <%= new Date().toLocaleDateString('th-TH') %></p>
+  </div>
+  <div class="d-flex gap-2">
+    <button class="btn btn-light border"><i class="bi bi-printer me-1"></i>พิมพ์</button>
+    <button class="btn btn-success"><i class="bi bi-file-earmark-excel me-1"></i>Excel</button>
+    <button class="btn btn-danger"><i class="bi bi-file-earmark-pdf me-1"></i>PDF</button>
+  </div>
+</div>
+
+<!-- Filter -->
+<div class="card mb-4">
+  <div class="card-body p-3">
+    <div class="row g-2 align-items-center">
+      <div class="col-md-3">
+        <label class="form-label fs-82 mb-1">ช่วงวันที่</label>
+        <select class="form-select form-select-sm">
+          <option>6 เดือนล่าสุด</option>
+          <option>3 เดือนล่าสุด</option>
+          <option>ปีปัจจุบัน</option>
+          <option>กำหนดเอง</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fs-82 mb-1">ประเภทสินเชื่อ</label>
+        <select class="form-select form-select-sm">
+          <option>ทุกประเภท</option>
+          <option>สินเชื่อบุคคล</option>
+          <option>สินเชื่อธุรกิจ</option>
+          <option>สินเชื่อบ้าน</option>
+          <option>สินเชื่อรถยนต์</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fs-82 mb-1">สถานะ</label>
+        <select class="form-select form-select-sm">
+          <option>ทุกสถานะ</option>
+          <option>อนุมัติ</option>
+          <option>รออนุมัติ</option>
+          <option>ปิดบัญชี</option>
+        </select>
+      </div>
+      <div class="col-md-3 d-flex align-items-end">
+        <button class="btn btn-primary btn-sm w-100"><i class="bi bi-funnel me-1"></i>กรองข้อมูล</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="text-muted fs-85">สัญญาทั้งหมด</div>
+        <div class="h3 fw-700 mb-1 mt-1"><%= fmtInt(kpi.totalLoans) %></div>
+        <div class="fs-78 text-success"><i class="bi bi-arrow-up"></i> ใหม่เดือนนี้ <%= kpi.newThisMonth %> สัญญา</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="text-muted fs-85">ยอดอนุมัติรวม</div>
+        <div class="h3 fw-700 mb-1 mt-1">฿<%= fmt(kpi.totalAmount, 0) %></div>
+        <div class="fs-78 text-muted">เฉลี่ย ฿<%= fmt(kpi.totalAmount / kpi.totalLoans, 0) %>/สัญญา</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="text-muted fs-85">ยอดเงินต้นคงเหลือ</div>
+        <div class="h3 fw-700 mb-1 mt-1">฿<%= fmt(kpi.outstanding, 0) %></div>
+        <div class="fs-78 text-muted">คิดเป็น <%= ((kpi.outstanding/kpi.totalAmount)*100).toFixed(1) %>% ของยอดอนุมัติ</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="text-muted fs-85">อัตราดอกเบี้ยเฉลี่ย</div>
+        <div class="h3 fw-700 mb-1 mt-1"><%= kpi.avgRate %>%</div>
+        <div class="fs-78 text-muted">ปิดบัญชีเดือนนี้ <%= kpi.closedThisMonth %> สัญญา</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts row -->
+<div class="row g-3 mb-4">
+  <!-- Monthly trend -->
+  <div class="col-lg-7">
+    <div class="card h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h6 class="mb-0 fw-600">แนวโน้มสินเชื่อใหม่รายเดือน</h6>
+          <span class="report-tag">6 เดือนล่าสุด</span>
+        </div>
+        <%
+          const maxAmount = Math.max(...monthly.map(m => m.amount));
+        %>
+        <div class="bar-chart">
+          <% monthly.forEach(m => { %>
+            <div class="bar-item">
+              <div class="bar-value">฿<%= (m.amount/1_000_000).toFixed(1) %>M</div>
+              <div class="bar-stack">
+                <div class="bar bg-primary" style="height: <%= (m.amount/maxAmount*100).toFixed(0) %>%"></div>
+              </div>
+              <div class="bar-label"><%= m.month %></div>
+              <div class="fs-78 text-muted"><%= m.newLoans %> สัญญา</div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- By Status -->
+  <div class="col-lg-5">
+    <div class="card h-100">
+      <div class="card-body p-4">
+        <h6 class="mb-3 fw-600">สัดส่วนตามสถานะ</h6>
+        <% const totalStatus = byStatus.reduce((s,x)=>s+x.count,0); %>
+        <div class="d-flex flex-column gap-3">
+          <% byStatus.forEach(s => { %>
+            <div>
+              <div class="d-flex justify-content-between mb-1">
+                <span class="fs-88">
+                  <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background:<%= s.color %>"></span>
+                  <%= s.status %>
+                </span>
+                <span class="fw-600 fs-85"><%= fmtInt(s.count) %> <span class="text-muted fs-78">(<%= ((s.count/totalStatus)*100).toFixed(1) %>%)</span></span>
+              </div>
+              <div class="progress">
+                <div class="progress-bar" style="width:<%= (s.count/totalStatus*100).toFixed(1) %>%; background:<%= s.color %>"></div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- By Type table -->
+<div class="card">
+  <div class="card-body p-0">
+    <div class="d-flex align-items-center justify-content-between p-4 pb-3">
+      <h6 class="mb-0 fw-600">แยกตามประเภทสินเชื่อ</h6>
+      <span class="report-tag">รวม <%= byType.length %> ประเภท</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table mb-0 align-middle report-table">
+        <thead>
+          <tr>
+            <th class="ps-4">ประเภทสินเชื่อ</th>
+            <th class="text-end">จำนวนสัญญา</th>
+            <th class="text-end">ยอดอนุมัติรวม</th>
+            <th class="text-end">วงเงินเฉลี่ย</th>
+            <th>สัดส่วน</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% const totalCount = byType.reduce((s,x)=>s+x.count,0);
+             const totalAmt = byType.reduce((s,x)=>s+x.amount,0); %>
+          <% byType.forEach(t => { %>
+            <tr>
+              <td class="ps-4">
+                <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background:<%= t.color %>"></span>
+                <span class="fw-500"><%= t.type %></span>
+              </td>
+              <td class="text-end fw-500"><%= fmtInt(t.count) %></td>
+              <td class="text-end fw-500">฿<%= fmt(t.amount, 0) %></td>
+              <td class="text-end text-muted">฿<%= fmt(t.amount/t.count, 0) %></td>
+              <td style="min-width:160px;">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="progress flex-grow-1">
+                    <div class="progress-bar" style="width:<%= (t.amount/totalAmt*100).toFixed(1) %>%; background:<%= t.color %>"></div>
+                  </div>
+                  <span class="fs-80 text-muted"><%= ((t.amount/totalAmt)*100).toFixed(1) %>%</span>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+          <tr class="report-row-total">
+            <td class="ps-4">รวมทั้งหมด</td>
+            <td class="text-end"><%= fmtInt(totalCount) %></td>
+            <td class="text-end">฿<%= fmt(totalAmt, 0) %></td>
+            <td class="text-end">฿<%= fmt(totalAmt/totalCount, 0) %></td>
+            <td>100%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

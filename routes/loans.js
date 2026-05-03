@@ -14,7 +14,31 @@ const mockLoans = [
 ];
 
 router.get('/', function(req, res) {
-  res.render('loans/index', { title: 'รายการสินเชื่อ', allLoans: mockLoans });
+  const statusKey = (req.query.status || 'all').toLowerCase();
+  const statusMap = {
+    all: null,
+    pending: 'รออนุมัติ',
+    approved: 'อนุมัติ',
+    rejected: 'ปฏิเสธ',
+    closed: 'ปิดบัญชี',
+  };
+  const targetStatus = statusMap[statusKey];
+  const filtered = targetStatus ? mockLoans.filter(l => l.status === targetStatus) : mockLoans;
+
+  const counts = {
+    all: mockLoans.length,
+    pending: mockLoans.filter(l => l.status === 'รออนุมัติ').length,
+    approved: mockLoans.filter(l => l.status === 'อนุมัติ').length,
+    rejected: mockLoans.filter(l => l.status === 'ปฏิเสธ').length,
+    closed: mockLoans.filter(l => l.status === 'ปิดบัญชี').length,
+  };
+
+  res.render('loans/index', {
+    title: 'รายการสินเชื่อ',
+    allLoans: filtered,
+    activeStatus: statusKey,
+    counts,
+  });
 });
 
 router.get('/apply', function(req, res) {

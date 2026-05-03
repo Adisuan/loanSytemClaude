@@ -48,33 +48,25 @@
 </div>
 
 <!-- Status Tabs -->
-<ul class="nav nav-tabs mb-3 flex-nowrap overflow-auto nav-tabs-bottom">
-  <li class="nav-item">
-    <a class="nav-link active nav-link-active-tab" href="#">
-      ทั้งหมด <span class="badge bg-primary ms-1">1,248</span>
+<%
+  const tabs = [
+    { key:'all',      label:'ทั้งหมด',    badgeClass:'bg-primary' },
+    { key:'pending',  label:'รออนุมัติ',  badgeClass:'bg-warning text-dark' },
+    { key:'approved', label:'อนุมัติแล้ว', badgeClass:'bg-success' },
+    { key:'rejected', label:'ปฏิเสธ',     badgeClass:'bg-danger' },
+    { key:'closed',   label:'ปิดบัญชี',    badgeClass:'bg-secondary' },
+  ];
+%>
+<nav class="status-tabs mb-3">
+  <% tabs.forEach(t => {
+       const isActive = activeStatus === t.key;
+       const href = t.key === 'all' ? '/loans' : '/loans?status=' + t.key;
+  %>
+    <a class="status-tab <%= isActive ? 'active' : '' %>" href="<%= href %>">
+      <%= t.label %> <span class="badge <%= t.badgeClass %>"><%= counts[t.key] %></span>
     </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link text-muted nav-link-plain" href="#">
-      รออนุมัติ <span class="badge bg-warning text-dark ms-1">143</span>
-    </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link text-muted nav-link-plain" href="#">
-      อนุมัติแล้ว <span class="badge bg-success ms-1">892</span>
-    </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link text-muted nav-link-plain" href="#">
-      ปฏิเสธ <span class="badge bg-danger ms-1">89</span>
-    </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link text-muted nav-link-plain" href="#">
-      ปิดบัญชี <span class="badge bg-secondary ms-1">124</span>
-    </a>
-  </li>
-</ul>
+  <% }) %>
+</nav>
 
 <!-- Table -->
 <div class="card">
@@ -164,7 +156,7 @@
     </div>
     <!-- Pagination -->
     <div class="d-flex align-items-center justify-content-between p-3 border-top flex-wrap gap-2">
-      <div class="text-muted fs-85">แสดง 1-10 จาก 1,248 รายการ</div>
+      <div class="text-muted fs-85">แสดง <%= allLoans.length %> จาก <%= counts.all %> รายการ</div>
       <nav>
         <ul class="pagination pagination-sm mb-0 gap-1">
           <li class="page-item disabled"><a class="page-link border-0" href="#">&laquo;</a></li>

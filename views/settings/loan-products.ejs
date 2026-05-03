@@ -1,0 +1,99 @@
+<%- include('_header') %>
+
+<div class="row g-3">
+  <div class="col-lg-4 col-xl-3"><%- include('_nav') %></div>
+  <div class="col-lg-8 col-xl-9">
+    <div class="settings-section">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">ประเภทสินเชื่อ</h6>
+          <div class="text-muted fs-82">กำหนดอัตราดอกเบี้ย วงเงิน และระยะเวลาผ่อนของแต่ละผลิตภัณฑ์</div>
+        </div>
+        <button class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>เพิ่มประเภท</button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th class="ps-4">รหัส</th>
+              <th>ชื่อผลิตภัณฑ์</th>
+              <th>อัตราดอกเบี้ย (%/ปี)</th>
+              <th>วงเงิน (บาท)</th>
+              <th>ระยะเวลา (เดือน)</th>
+              <th class="text-center">ใช้งาน</th>
+              <th class="pe-4"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% loanProducts.forEach(p => { %>
+              <tr>
+                <td class="ps-4"><span class="badge bg-secondary bg-opacity-15 text-secondary"><%= p.code %></span></td>
+                <td class="fw-500"><%= p.name %></td>
+                <td><%= p.rateMin %>% – <%= p.rateMax %>%</td>
+                <td><%= p.amountMin.toLocaleString() %> – <%= p.amountMax.toLocaleString() %></td>
+                <td><%= p.termMin %> – <%= p.termMax %></td>
+                <td class="text-center">
+                  <div class="form-check form-switch d-inline-block">
+                    <input class="form-check-input switch-lg" type="checkbox" <%= p.active ? 'checked' : '' %>>
+                  </div>
+                </td>
+                <td class="pe-4 text-end">
+                  <button class="btn btn-sm btn-light border" title="แก้ไข"><i class="bi bi-pencil"></i></button>
+                  <button class="btn btn-sm btn-light border text-danger" title="ลบ"><i class="bi bi-trash"></i></button>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="settings-section-body border-top">
+        <div class="d-flex align-items-start gap-3">
+          <div class="icon-box bg-info bg-opacity-10 text-info"><i class="bi bi-info-circle"></i></div>
+          <div>
+            <div class="fw-600 mb-1">วิธีคำนวณดอกเบี้ย</div>
+            <div class="text-muted fs-85">
+              ระบบใช้วิธี <strong>Effective Rate</strong> (ลดต้นลดดอก) คำนวณยอดผ่อนรายงวด
+              อัตราดอกเบี้ยที่กำหนดเป็นช่วง — ตอนทำสัญญาจะเลือกอัตราที่เหมาะกับเครดิตของลูกค้า
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section mt-3">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">เงื่อนไขเริ่มต้น</h6>
+          <div class="text-muted fs-82">ค่าตั้งต้นที่ใช้ตอนทำสัญญาใหม่</div>
+        </div>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">วันครบกำหนดชำระ</div><div class="help">วันที่ของเดือนที่ลูกค้าต้องชำระ</div></div>
+          <div class="settings-row-control">
+            <select class="form-select" style="max-width:240px">
+              <option>ตามวันที่ทำสัญญา</option>
+              <option>ทุกวันที่ 1 ของเดือน</option>
+              <option>ทุกวันที่ 15 ของเดือน</option>
+              <option>ทุกวันสิ้นเดือน</option>
+            </select>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">ปัดเศษยอดผ่อน</div></div>
+          <div class="settings-row-control">
+            <select class="form-select" style="max-width:240px">
+              <option>ทศนิยม 2 ตำแหน่ง</option>
+              <option>ปัดขึ้นเป็นบาท</option>
+              <option>ปัดลงเป็นบาท</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

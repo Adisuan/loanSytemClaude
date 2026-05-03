@@ -1,0 +1,75 @@
+<%- include('_header') %>
+
+<div class="row g-3">
+  <div class="col-lg-4 col-xl-3"><%- include('_nav') %></div>
+  <div class="col-lg-8 col-xl-9">
+    <div class="settings-section">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">ช่องทางการรับชำระ</h6>
+          <div class="text-muted fs-82">เปิด/ปิดการใช้งานแต่ละช่องทาง และกำหนดค่าธรรมเนียม</div>
+        </div>
+      </div>
+      <div class="settings-section-body">
+        <% channels.forEach(c => { %>
+          <div class="d-flex align-items-center gap-3 p-3 border rounded mb-2">
+            <div class="rounded d-flex align-items-center justify-content-center" style="width:44px;height:44px;background:#f8fafc;color:#1a3c6e">
+              <i class="bi <%= c.icon %> fs-5"></i>
+            </div>
+            <div class="flex-grow-1">
+              <div class="fw-600"><%= c.name %></div>
+              <div class="text-muted fs-82">
+                <% if (c.fee === 0) { %>ไม่มีค่าธรรมเนียม
+                <% } else if (typeof c.fee === 'number' && c.fee < 5) { %>ค่าธรรมเนียม <%= c.fee %>%
+                <% } else { %>ค่าธรรมเนียม <%= c.fee %> บาท/ครั้ง<% } %>
+              </div>
+            </div>
+            <div class="form-check form-switch m-0">
+              <input class="form-check-input switch-lg" type="checkbox" <%= c.enabled ? 'checked' : '' %>>
+            </div>
+            <button class="btn btn-sm btn-light border"><i class="bi bi-gear"></i></button>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <form method="POST" action="/settings/channels" class="settings-section mt-3">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">บัญชีรับโอน</h6>
+          <div class="text-muted fs-82">บัญชีหลักที่จะแสดงบน QR และเอกสาร</div>
+        </div>
+        <button class="btn btn-primary btn-sm"><i class="bi bi-check2 me-1"></i>บันทึก</button>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">ธนาคาร</div></div>
+          <div class="settings-row-control">
+            <select class="form-select">
+              <option selected><%= bankAccount.bank %></option>
+              <option>ธนาคารกสิกรไทย</option>
+              <option>ธนาคารกรุงเทพ</option>
+              <option>ธนาคารกรุงไทย</option>
+              <option>ธนาคารกรุงศรีอยุธยา</option>
+              <option>ธนาคารทหารไทยธนชาต</option>
+            </select>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">ชื่อบัญชี</div></div>
+          <div class="settings-row-control"><input class="form-control" value="<%= bankAccount.accountName %>"></div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">เลขที่บัญชี</div></div>
+          <div class="settings-row-control"><input class="form-control" value="<%= bankAccount.accountNo %>"></div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">สาขา</div></div>
+          <div class="settings-row-control"><input class="form-control" value="<%= bankAccount.branch %>"></div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

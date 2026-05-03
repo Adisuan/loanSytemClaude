@@ -1,0 +1,15 @@
+<%- include('../partials/header', { title: title, page: 'settings', breadcrumb: 'ตั้งค่า — ' + sectionLabel }) %>
+
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+  <div>
+    <h5 class="mb-0 fw-700">ตั้งค่าระบบ</h5>
+    <p class="text-muted mb-0 fs-85">จัดการการตั้งค่าและพฤติกรรมของระบบสินเชื่อ</p>
+  </div>
+</div>
+
+<% if (saved) { %>
+  <div class="alert alert-success border-0 d-flex align-items-center gap-2 mb-3">
+    <i class="bi bi-check-circle-fill"></i>
+    <span>บันทึกการตั้งค่าเรียบร้อยแล้ว</span>
+  </div>
+<% } %>

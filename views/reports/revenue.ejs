@@ -1,0 +1,211 @@
+<%- include('../partials/header', { title: 'รายงานรายรับ', page: 'reports-revenue', breadcrumb: 'รายงานรายรับ' }) %>
+
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+  <div>
+    <a href="/reports" class="text-muted text-decoration-none fs-85"><i class="bi bi-arrow-left"></i> กลับไปยังศูนย์รายงาน</a>
+    <h5 class="mb-0 fw-700 mt-1">รายงานรายรับ</h5>
+    <p class="text-muted mb-0 fs-85">ยอดเงินที่จัดเก็บได้ แยกตามเดือน ช่องทางการชำระ และประเภทสินเชื่อ</p>
+  </div>
+  <div class="d-flex gap-2">
+    <button class="btn btn-light border"><i class="bi bi-printer me-1"></i>พิมพ์</button>
+    <button class="btn btn-success"><i class="bi bi-file-earmark-excel me-1"></i>Excel</button>
+    <button class="btn btn-danger"><i class="bi bi-file-earmark-pdf me-1"></i>PDF</button>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start justify-content-between">
+          <div>
+            <div class="text-muted fs-85">ยอดเก็บได้รวม (YTD)</div>
+            <div class="h3 fw-700 mb-1 mt-1">฿<%= fmt(kpi.totalCollected, 0) %></div>
+            <div class="fs-78 text-success"><i class="bi bi-arrow-up"></i> <%= kpi.growth %>% เทียบปีก่อน</div>
+          </div>
+          <div class="icon-box bg-success bg-opacity-10 text-success"><i class="bi bi-cash-stack"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start justify-content-between">
+          <div>
+            <div class="text-muted fs-85">เดือนนี้</div>
+            <div class="h3 fw-700 mb-1 mt-1">฿<%= fmt(kpi.thisMonth, 0) %></div>
+            <div class="fs-78 text-muted">เม.ย. 2568</div>
+          </div>
+          <div class="icon-box bg-primary bg-opacity-10 text-primary"><i class="bi bi-calendar-check"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start justify-content-between">
+          <div>
+            <div class="text-muted fs-85">ดอกเบี้ยรับ</div>
+            <div class="h3 fw-700 mb-1 mt-1">฿<%= fmt(kpi.interestIncome, 0) %></div>
+            <div class="fs-78 text-muted">คิดเป็น <%= ((kpi.interestIncome/kpi.totalCollected)*100).toFixed(1) %>% ของรายรับ</div>
+          </div>
+          <div class="icon-box bg-info bg-opacity-10 text-info"><i class="bi bi-percent"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start justify-content-between">
+          <div>
+            <div class="text-muted fs-85">ค่าปรับ / ค่าธรรมเนียม</div>
+            <div class="h3 fw-700 mb-1 mt-1">฿<%= fmt(kpi.penaltyIncome, 0) %></div>
+            <div class="fs-78 text-muted">YTD</div>
+          </div>
+          <div class="icon-box bg-warning bg-opacity-10 text-warning"><i class="bi bi-exclamation-circle"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Stacked bar chart -->
+<div class="card mb-4">
+  <div class="card-body p-4">
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+      <h6 class="mb-0 fw-600">รายรับรายเดือน (เงินต้น / ดอกเบี้ย / ค่าปรับ)</h6>
+      <div class="d-flex gap-3 fs-82">
+        <span><span class="d-inline-block rounded me-1" style="width:12px;height:12px;background:#3b82f6;vertical-align:middle"></span> เงินต้น</span>
+        <span><span class="d-inline-block rounded me-1" style="width:12px;height:12px;background:#10b981;vertical-align:middle"></span> ดอกเบี้ย</span>
+        <span><span class="d-inline-block rounded me-1" style="width:12px;height:12px;background:#ef4444;vertical-align:middle"></span> ค่าปรับ</span>
+      </div>
+    </div>
+    <%
+      const totals = monthly.map(m => m.principal + m.interest + m.penalty);
+      const maxTotal = Math.max(...totals);
+    %>
+    <div class="bar-chart">
+      <% monthly.forEach((m, i) => {
+        const total = totals[i];
+        const h = (total/maxTotal*100).toFixed(1);
+        const pct = x => (x/total*100).toFixed(1);
+      %>
+        <div class="bar-item">
+          <div class="bar-value">฿<%= (total/1_000_000).toFixed(2) %>M</div>
+          <div class="bar-stack">
+            <div class="bar" style="height: <%= h %>%; background: linear-gradient(to top, #3b82f6 0%, #3b82f6 <%= pct(m.principal) %>%, #10b981 <%= pct(m.principal) %>%, #10b981 <%= (parseFloat(pct(m.principal))+parseFloat(pct(m.interest))).toFixed(1) %>%, #ef4444 <%= (parseFloat(pct(m.principal))+parseFloat(pct(m.interest))).toFixed(1) %>%);"></div>
+          </div>
+          <div class="bar-label"><%= m.month %></div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <!-- By channel -->
+  <div class="col-lg-7">
+    <div class="card h-100">
+      <div class="card-body p-4">
+        <h6 class="mb-3 fw-600">รายรับตามช่องทางการชำระ</h6>
+        <% const totalChannel = byChannel.reduce((s,x)=>s+x.amount,0); %>
+        <div class="d-flex flex-column gap-3">
+          <% byChannel.forEach(c => { %>
+            <div>
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <span class="fs-88">
+                  <i class="bi <%= c.icon %> me-2" style="color:<%= c.color %>"></i>
+                  <%= c.channel %>
+                  <span class="text-muted fs-78 ms-1">(<%= c.count %> ครั้ง)</span>
+                </span>
+                <span class="fw-600 fs-85">฿<%= fmt(c.amount, 0) %></span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <div class="progress flex-grow-1">
+                  <div class="progress-bar" style="width:<%= (c.amount/totalChannel*100).toFixed(1) %>%; background:<%= c.color %>"></div>
+                </div>
+                <span class="fs-80 text-muted" style="min-width:42px;text-align:right"><%= ((c.amount/totalChannel)*100).toFixed(1) %>%</span>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- By loan type -->
+  <div class="col-lg-5">
+    <div class="card h-100">
+      <div class="card-body p-4">
+        <h6 class="mb-3 fw-600">รายรับตามประเภทสินเชื่อ</h6>
+        <% const totalLT = byLoanType.reduce((s,x)=>s+x.amount,0); %>
+        <div class="d-flex flex-column gap-3">
+          <% byLoanType.forEach(t => { %>
+            <div>
+              <div class="d-flex justify-content-between mb-1">
+                <span class="fs-88">
+                  <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background:<%= t.color %>"></span>
+                  <%= t.type %>
+                </span>
+                <span class="fw-600 fs-85">฿<%= fmt(t.amount, 0) %></span>
+              </div>
+              <div class="progress">
+                <div class="progress-bar" style="width:<%= (t.amount/totalLT*100).toFixed(1) %>%; background:<%= t.color %>"></div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail table -->
+<div class="card">
+  <div class="card-body p-0">
+    <div class="d-flex align-items-center justify-content-between p-4 pb-3">
+      <h6 class="mb-0 fw-600">รายละเอียดรายรับรายเดือน</h6>
+    </div>
+    <div class="table-responsive">
+      <table class="table mb-0 align-middle report-table">
+        <thead>
+          <tr>
+            <th class="ps-4">เดือน</th>
+            <th class="text-end">เงินต้น</th>
+            <th class="text-end">ดอกเบี้ย</th>
+            <th class="text-end">ค่าปรับ</th>
+            <th class="text-end">รวม</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% let sumP=0, sumI=0, sumPen=0; %>
+          <% monthly.forEach(m => {
+              sumP+=m.principal; sumI+=m.interest; sumPen+=m.penalty;
+              const total = m.principal + m.interest + m.penalty;
+          %>
+            <tr>
+              <td class="ps-4 fw-500"><%= m.month %></td>
+              <td class="text-end">฿<%= fmt(m.principal, 0) %></td>
+              <td class="text-end">฿<%= fmt(m.interest, 0) %></td>
+              <td class="text-end">฿<%= fmt(m.penalty, 0) %></td>
+              <td class="text-end fw-600">฿<%= fmt(total, 0) %></td>
+            </tr>
+          <% }) %>
+          <tr class="report-row-total">
+            <td class="ps-4">รวม 6 เดือน</td>
+            <td class="text-end">฿<%= fmt(sumP, 0) %></td>
+            <td class="text-end">฿<%= fmt(sumI, 0) %></td>
+            <td class="text-end">฿<%= fmt(sumPen, 0) %></td>
+            <td class="text-end">฿<%= fmt(sumP+sumI+sumPen, 0) %></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

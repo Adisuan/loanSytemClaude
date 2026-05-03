@@ -1,0 +1,141 @@
+<%- include('_header') %>
+
+<div class="row g-3">
+  <div class="col-lg-4 col-xl-3"><%- include('_nav') %></div>
+  <div class="col-lg-8 col-xl-9">
+    <form method="POST" action="/settings/general" class="settings-section">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">ข้อมูลบริษัท</h6>
+          <div class="text-muted fs-82">ข้อมูลที่จะแสดงบนเอกสาร ใบเสร็จ และสัญญา</div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-check2 me-1"></i>บันทึกการเปลี่ยนแปลง</button>
+      </div>
+      <div class="settings-section-body">
+
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="label">โลโก้บริษัท</div>
+            <div class="help">PNG หรือ JPG ขนาด 200×200 px</div>
+          </div>
+          <div class="settings-row-control">
+            <div class="d-flex align-items-center gap-3">
+              <div class="rounded d-flex align-items-center justify-content-center text-white" style="width:72px;height:72px;background:linear-gradient(135deg,#4f8ef7,#2563eb);">
+                <i class="bi bi-bank2 fs-3"></i>
+              </div>
+              <div>
+                <button type="button" class="btn btn-sm btn-light border"><i class="bi bi-upload me-1"></i>อัปโหลด</button>
+                <button type="button" class="btn btn-sm btn-light border text-danger"><i class="bi bi-trash"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="label">ชื่อบริษัท</div>
+            <div class="help">ชื่อนิติบุคคลตามที่จดทะเบียน</div>
+          </div>
+          <div class="settings-row-control">
+            <input class="form-control" name="name" value="<%= company.name %>">
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="label">เลขประจำตัวผู้เสียภาษี</div>
+            <div class="help">13 หลัก ตามข้อมูลกรมสรรพากร</div>
+          </div>
+          <div class="settings-row-control">
+            <input class="form-control" name="taxId" value="<%= company.taxId %>">
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="label">ที่อยู่</div>
+            <div class="help">ที่อยู่ตามทะเบียนบริษัท</div>
+          </div>
+          <div class="settings-row-control">
+            <textarea class="form-control" rows="2" name="address"><%= company.address %></textarea>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="label">ติดต่อ</div>
+            <div class="help">เบอร์ อีเมล และเว็บไซต์</div>
+          </div>
+          <div class="settings-row-control">
+            <div class="row g-2">
+              <div class="col-md-4">
+                <label class="form-label fs-82">โทรศัพท์</label>
+                <input class="form-control" name="phone" value="<%= company.phone %>">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fs-82">อีเมล</label>
+                <input class="form-control" name="email" value="<%= company.email %>">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fs-82">เว็บไซต์</label>
+                <input class="form-control" name="website" value="<%= company.website %>">
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </form>
+
+    <form method="POST" action="/settings/general" class="settings-section mt-3">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">ภาษาและรูปแบบ</h6>
+          <div class="text-muted fs-82">ภาษาแสดงผล เขตเวลา และรูปแบบวันที่/สกุลเงิน</div>
+        </div>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">ภาษา</div></div>
+          <div class="settings-row-control">
+            <select class="form-select">
+              <option value="th" selected>ไทย</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">เขตเวลา</div></div>
+          <div class="settings-row-control">
+            <select class="form-select">
+              <option selected>Asia/Bangkok (GMT+7)</option>
+              <option>Asia/Singapore (GMT+8)</option>
+              <option>UTC</option>
+            </select>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">รูปแบบวันที่</div></div>
+          <div class="settings-row-control">
+            <select class="form-select">
+              <option selected>DD/MM/YYYY (พ.ศ.)</option>
+              <option>DD/MM/YYYY (ค.ศ.)</option>
+              <option>YYYY-MM-DD</option>
+            </select>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">สกุลเงิน</div></div>
+          <div class="settings-row-control">
+            <select class="form-select">
+              <option selected>บาท (THB) — ฿</option>
+              <option>USD — $</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

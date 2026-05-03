@@ -1,0 +1,208 @@
+<%- include('../partials/header', { title: 'รายงานพอร์ตสินเชื่อ', page: 'reports', breadcrumb: 'รายงานพอร์ตสินเชื่อ' }) %>
+
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+  <div>
+    <a href="/reports" class="text-muted text-decoration-none fs-85"><i class="bi bi-arrow-left"></i> กลับไปยังศูนย์รายงาน</a>
+    <h5 class="mb-0 fw-700 mt-1">รายงานพอร์ตสินเชื่อ</h5>
+    <p class="text-muted mb-0 fs-85">การกระจายตัวของสินเชื่อในพอร์ต แยกตามประเภท สถานะ และผู้กู้รายใหญ่</p>
+  </div>
+  <div class="d-flex gap-2">
+    <button class="btn btn-light border"><i class="bi bi-printer me-1"></i>พิมพ์</button>
+    <button class="btn btn-success"><i class="bi bi-file-earmark-excel me-1"></i>Excel</button>
+    <button class="btn btn-danger"><i class="bi bi-file-earmark-pdf me-1"></i>PDF</button>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="text-muted fs-85">มูลค่าพอร์ตรวม</div>
+        <div class="h3 fw-700 mb-1 mt-1">฿<%= fmt(kpi.totalPortfolio, 0) %></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="text-muted fs-85">สัญญา Active</div>
+        <div class="h3 fw-700 mb-1 mt-1"><%= fmtInt(kpi.activeLoans) %></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="text-muted fs-85">วงเงินเฉลี่ย</div>
+        <div class="h3 fw-700 mb-1 mt-1">฿<%= fmt(kpi.avgTicket, 0) %></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="text-muted fs-85">ระยะผ่อนเฉลี่ย</div>
+        <div class="h3 fw-700 mb-1 mt-1"><%= kpi.avgTerm %> <span class="fs-85 text-muted fw-500">เดือน</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Donut + Status -->
+<div class="row g-3 mb-4">
+  <!-- By type donut -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-body p-4">
+        <h6 class="mb-3 fw-600">สัดส่วนตามประเภทสินเชื่อ (มูลค่า)</h6>
+        <div class="row align-items-center">
+          <div class="col-md-5 text-center">
+            <%
+              const totalShare = byType.reduce((s,x)=>s+x.share,0);
+              let acc = 0;
+            %>
+            <svg class="donut-svg" viewBox="0 0 36 36">
+              <circle class="donut-bg" cx="18" cy="18" r="15.9155"/>
+              <% byType.forEach(t => {
+                  const dash = t.share;
+                  const offset = 100 - acc;
+                  acc += dash;
+              %>
+                <circle class="donut-seg" cx="18" cy="18" r="15.9155"
+                        stroke="<%= t.color %>"
+                        stroke-dasharray="<%= dash %> <%= 100-dash %>"
+                        stroke-dashoffset="<%= offset %>"/>
+              <% }) %>
+            </svg>
+            <div class="mt-2 fs-82 text-muted">รวม ฿<%= fmt(kpi.totalPortfolio/1_000_000, 1) %>M</div>
+          </div>
+          <div class="col-md-7">
+            <div class="d-flex flex-column gap-2">
+              <% byType.forEach(t => { %>
+                <div class="d-flex align-items-center justify-content-between">
+                  <span class="fs-88">
+                    <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background:<%= t.color %>"></span>
+                    <%= t.type %>
+                  </span>
+                  <span class="fw-600 fs-85"><%= t.share %>%</span>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- By status -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-body p-4">
+        <h6 class="mb-3 fw-600">สถานะคุณภาพพอร์ต</h6>
+        <% const totalSC = byStatus.reduce((s,x)=>s+x.count,0); %>
+        <% const totalSA = byStatus.reduce((s,x)=>s+x.amount,0); %>
+        <div class="d-flex flex-column gap-3">
+          <% byStatus.forEach(s => { %>
+            <div>
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <span class="fs-88">
+                  <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background:<%= s.color %>"></span>
+                  <%= s.status %>
+                  <span class="text-muted fs-78 ms-1">(<%= s.count %> สัญญา)</span>
+                </span>
+                <span class="fw-600 fs-85">฿<%= fmt(s.amount, 0) %></span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <div class="progress flex-grow-1">
+                  <div class="progress-bar" style="width:<%= (s.amount/totalSA*100).toFixed(1) %>%; background:<%= s.color %>"></div>
+                </div>
+                <span class="fs-80 text-muted" style="min-width:42px;text-align:right"><%= ((s.amount/totalSA)*100).toFixed(1) %>%</span>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- By type table -->
+<div class="card mb-4">
+  <div class="card-body p-0">
+    <div class="d-flex align-items-center justify-content-between p-4 pb-3">
+      <h6 class="mb-0 fw-600">ตารางพอร์ตตามประเภทสินเชื่อ</h6>
+    </div>
+    <div class="table-responsive">
+      <table class="table mb-0 align-middle report-table">
+        <thead>
+          <tr>
+            <th class="ps-4">ประเภท</th>
+            <th class="text-end">จำนวนสัญญา</th>
+            <th class="text-end">มูลค่ารวม</th>
+            <th class="text-end">วงเงินเฉลี่ย</th>
+            <th class="text-end pe-4">สัดส่วน</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% byType.forEach(t => { %>
+            <tr>
+              <td class="ps-4">
+                <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background:<%= t.color %>"></span>
+                <span class="fw-500"><%= t.type %></span>
+              </td>
+              <td class="text-end"><%= fmtInt(t.count) %></td>
+              <td class="text-end fw-500">฿<%= fmt(t.amount, 0) %></td>
+              <td class="text-end text-muted">฿<%= fmt(t.amount/t.count, 0) %></td>
+              <td class="text-end pe-4 fw-500"><%= t.share %>%</td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Top Borrowers -->
+<div class="card">
+  <div class="card-body p-0">
+    <div class="d-flex align-items-center justify-content-between p-4 pb-3">
+      <h6 class="mb-0 fw-600">ผู้กู้รายใหญ่ Top 5</h6>
+      <span class="report-tag">เรียงตามวงเงิน</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle report-table">
+        <thead>
+          <tr>
+            <th class="ps-4" style="width:60px">อันดับ</th>
+            <th>ผู้กู้</th>
+            <th>ประเภท</th>
+            <th class="text-center">จำนวนสัญญา</th>
+            <th class="text-end pe-4">วงเงินรวม</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% topBorrowers.forEach((b, i) => { %>
+            <tr>
+              <td class="ps-4">
+                <span class="badge bg-primary bg-opacity-15 text-primary fs-80">#<%= i+1 %></span>
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="rounded-circle d-flex align-items-center justify-content-center text-white avatar-md flex-shrink-0"
+                       style="background:<%= b.color %>"><%= b.name.charAt(0) %></div>
+                  <span class="fw-500"><%= b.name %></span>
+                </div>
+              </td>
+              <td><span class="text-muted fs-88"><%= b.type %></span></td>
+              <td class="text-center"><%= b.loans %></td>
+              <td class="text-end pe-4 fw-600">฿<%= fmt(b.amount, 0) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

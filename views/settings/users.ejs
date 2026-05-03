@@ -1,0 +1,97 @@
+<%- include('_header') %>
+
+<div class="row g-3">
+  <div class="col-lg-4 col-xl-3"><%- include('_nav') %></div>
+  <div class="col-lg-8 col-xl-9">
+    <div class="settings-section">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">ผู้ใช้งานระบบ</h6>
+          <div class="text-muted fs-82">รวม <%= users.length %> คน · active <%= users.filter(u=>u.status==='active').length %> · inactive <%= users.filter(u=>u.status==='inactive').length %></div>
+        </div>
+        <button class="btn btn-primary btn-sm"><i class="bi bi-person-plus me-1"></i>เพิ่มผู้ใช้</button>
+      </div>
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th class="ps-4">ผู้ใช้</th>
+              <th>อีเมล</th>
+              <th>บทบาท</th>
+              <th>สถานะ</th>
+              <th>เข้าใช้งานล่าสุด</th>
+              <th class="pe-4"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% users.forEach(u => { %>
+              <tr>
+                <td class="ps-4">
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white avatar-md flex-shrink-0" style="background:<%= u.color %>"><%= u.avatar %></div>
+                    <div class="fw-500"><%= u.name %></div>
+                  </div>
+                </td>
+                <td class="text-muted fs-88"><%= u.email %></td>
+                <td><span class="fs-85"><%= u.role %></span></td>
+                <td>
+                  <% if (u.status === 'active') { %>
+                    <span class="badge-status bg-success bg-opacity-15 text-success"><i class="bi bi-check-circle-fill me-1"></i>ใช้งานอยู่</span>
+                  <% } else { %>
+                    <span class="badge-status bg-secondary bg-opacity-15 text-secondary">ปิดใช้งาน</span>
+                  <% } %>
+                </td>
+                <td class="text-muted fs-85"><%= u.lastLogin %></td>
+                <td class="pe-4 text-end">
+                  <div class="dropdown">
+                    <button class="btn btn-sm btn-light border-0" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 dropdown-menu-text">
+                      <li><a class="dropdown-item" href="#"><i class="bi bi-pencil me-2"></i>แก้ไข</a></li>
+                      <li><a class="dropdown-item" href="#"><i class="bi bi-key me-2"></i>รีเซ็ตรหัสผ่าน</a></li>
+                      <li><a class="dropdown-item" href="#"><i class="bi bi-shield me-2"></i>เปลี่ยนสิทธิ์</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <% if (u.status === 'active') { %>
+                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-pause-circle me-2"></i>ปิดใช้งาน</a></li>
+                      <% } else { %>
+                        <li><a class="dropdown-item text-success" href="#"><i class="bi bi-play-circle me-2"></i>เปิดใช้งาน</a></li>
+                      <% } %>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="settings-section mt-3">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">บทบาทและสิทธิ์</h6>
+          <div class="text-muted fs-82">กำหนดสิทธิ์การเข้าถึงของแต่ละบทบาท</div>
+        </div>
+        <button class="btn btn-light border btn-sm"><i class="bi bi-plus-lg me-1"></i>เพิ่มบทบาท</button>
+      </div>
+      <div class="settings-section-body">
+        <div class="row g-3">
+          <% roles.forEach(r => { %>
+            <div class="col-md-6 col-xl-4">
+              <div class="border rounded p-3 h-100">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="d-inline-block rounded-circle" style="width:10px;height:10px;background:<%= r.color %>"></span>
+                  <div class="fw-600"><%= r.name %></div>
+                  <span class="badge bg-light text-dark ms-auto"><%= r.count %> คน</span>
+                </div>
+                <div class="text-muted fs-82 mb-3"><%= r.desc %></div>
+                <button class="btn btn-sm btn-light border w-100"><i class="bi bi-shield-check me-1"></i>กำหนดสิทธิ์</button>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

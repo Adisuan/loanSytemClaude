@@ -1,0 +1,122 @@
+<%- include('_header') %>
+
+<div class="row g-3">
+  <div class="col-lg-4 col-xl-3"><%- include('_nav') %></div>
+  <div class="col-lg-8 col-xl-9">
+    <form method="POST" action="/settings/fees" class="settings-section">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">ค่าธรรมเนียมเปิดบัญชี</h6>
+          <div class="text-muted fs-82">เก็บครั้งเดียวตอนทำสัญญาใหม่</div>
+        </div>
+        <button class="btn btn-primary btn-sm"><i class="bi bi-check2 me-1"></i>บันทึก</button>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="label">อัตรา (%) ของวงเงิน</div>
+            <div class="help">คิดเป็นเปอร์เซ็นต์ของเงินต้น</div>
+          </div>
+          <div class="settings-row-control">
+            <div class="input-group" style="max-width:200px">
+              <input class="form-control text-end" name="openFeePct" value="<%= fees.openFeePct %>">
+              <span class="input-group-text">%</span>
+            </div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="label">ค่าธรรมเนียมขั้นต่ำ</div>
+            <div class="help">หากคำนวณ % แล้วต่ำกว่านี้ จะเก็บตามค่านี้</div>
+          </div>
+          <div class="settings-row-control">
+            <div class="input-group" style="max-width:200px">
+              <span class="input-group-text">฿</span>
+              <input class="form-control text-end" name="openFeeMin" value="<%= fees.openFeeMin %>">
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <form method="POST" action="/settings/fees" class="settings-section mt-3">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">ค่าปรับชำระล่าช้า</h6>
+          <div class="text-muted fs-82">คิดเป็นรายวันจากยอดที่ค้าง</div>
+        </div>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">อัตราค่าปรับ (%/วัน)</div></div>
+          <div class="settings-row-control">
+            <div class="input-group" style="max-width:200px">
+              <input class="form-control text-end" name="latePenaltyPctPerDay" value="<%= fees.latePenaltyPctPerDay %>">
+              <span class="input-group-text">%/วัน</span>
+            </div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="label">ระยะผ่อนผัน (Grace Period)</div>
+            <div class="help">หลังครบกำหนดกี่วันถึงเริ่มคิดค่าปรับ</div>
+          </div>
+          <div class="settings-row-control">
+            <div class="input-group" style="max-width:200px">
+              <input class="form-control text-end" name="graceDays" value="<%= fees.graceDays %>">
+              <span class="input-group-text">วัน</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <form method="POST" action="/settings/fees" class="settings-section mt-3">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">ค่าธรรมเนียมอื่น ๆ</h6>
+        </div>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">ค่าธรรมเนียมปิดสัญญาก่อนกำหนด</div><div class="help">เมื่อลูกค้าชำระคืนทั้งหมดก่อนครบสัญญา</div></div>
+          <div class="settings-row-control">
+            <div class="input-group" style="max-width:200px">
+              <input class="form-control text-end" value="<%= fees.prepaymentFeePct %>">
+              <span class="input-group-text">%</span>
+            </div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">ค่าธรรมเนียมเช็คคืน</div></div>
+          <div class="settings-row-control">
+            <div class="input-group" style="max-width:200px">
+              <span class="input-group-text">฿</span>
+              <input class="form-control text-end" value="<%= fees.bouncedChequeFee %>">
+            </div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">ค่าออกเอกสารใหม่</div><div class="help">ใบเสร็จ/สัญญาฉบับสำเนา</div></div>
+          <div class="settings-row-control">
+            <div class="input-group" style="max-width:200px">
+              <span class="input-group-text">฿</span>
+              <input class="form-control text-end" value="<%= fees.documentReissueFee %>">
+            </div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">ค่าปิดบัญชี</div></div>
+          <div class="settings-row-control">
+            <div class="input-group" style="max-width:200px">
+              <span class="input-group-text">฿</span>
+              <input class="form-control text-end" value="<%= fees.earlyClosureFee %>">
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

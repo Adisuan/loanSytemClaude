@@ -1,0 +1,161 @@
+<%- include('_header') %>
+
+<div class="row g-3">
+  <div class="col-lg-4 col-xl-3"><%- include('_nav') %></div>
+  <div class="col-lg-8 col-xl-9">
+    <form method="POST" action="/settings/system" class="settings-section">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">รูปแบบเลขที่เอกสาร</h6>
+          <div class="text-muted fs-82">รูปแบบ: <code>{PREFIX}-{YYYY}-{####}</code> เช่น <code>LN-2025-0001</code></div>
+        </div>
+        <button class="btn btn-primary btn-sm"><i class="bi bi-check2 me-1"></i>บันทึก</button>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">เลขที่สัญญา</div></div>
+          <div class="settings-row-control">
+            <div class="row g-2">
+              <div class="col-md-3"><input class="form-control" value="<%= system.loanPrefix %>"></div>
+              <div class="col-md-9"><input class="form-control" value="<%= system.loanFormat %>"></div>
+            </div>
+            <div class="text-muted fs-78 mt-1">ตัวอย่าง: <span class="text-primary fw-500">LN-2025-0001</span></div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">เลขที่ใบเสร็จ</div></div>
+          <div class="settings-row-control">
+            <div class="row g-2">
+              <div class="col-md-3"><input class="form-control" value="<%= system.receiptPrefix %>"></div>
+              <div class="col-md-9"><input class="form-control" value="<%= system.receiptFormat %>"></div>
+            </div>
+            <div class="text-muted fs-78 mt-1">ตัวอย่าง: <span class="text-primary fw-500">RCP-2025-0001</span></div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">รหัสลูกค้า</div></div>
+          <div class="settings-row-control">
+            <input class="form-control" value="<%= system.customerPrefix %>" style="max-width:200px">
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">รหัสหลักประกัน</div></div>
+          <div class="settings-row-control">
+            <input class="form-control" value="<%= system.collateralPrefix %>" style="max-width:200px">
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">เริ่มปีบัญชี</div><div class="help">ใช้สำหรับการรีเซ็ตเลขรันนิ่ง</div></div>
+          <div class="settings-row-control">
+            <select class="form-select" style="max-width:200px">
+              <option <%= system.fiscalYearStart === 'ม.ค.' ? 'selected' : '' %>>ม.ค.</option>
+              <option>เม.ย.</option>
+              <option>ก.ค.</option>
+              <option>ต.ค.</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div class="settings-section mt-3">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">สำรองข้อมูล</h6>
+          <div class="text-muted fs-82">สำรองข้อมูลอัตโนมัติและการกู้คืน</div>
+        </div>
+        <button class="btn btn-success btn-sm"><i class="bi bi-cloud-arrow-up me-1"></i>สำรองตอนนี้</button>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="label">สำรองอัตโนมัติทุกวัน</div>
+            <div class="help">สำรองล่าสุด: <strong><%= system.lastBackup %></strong></div>
+          </div>
+          <div class="settings-row-control">
+            <div class="form-check form-switch">
+              <input class="form-check-input switch-lg" type="checkbox" <%= system.autoBackup ? 'checked' : '' %>>
+            </div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">เวลาสำรอง</div></div>
+          <div class="settings-row-control">
+            <input class="form-control" type="time" value="<%= system.backupTime %>" style="max-width:200px">
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">เก็บข้อมูลย้อนหลัง</div></div>
+          <div class="settings-row-control">
+            <div class="input-group" style="max-width:200px">
+              <input class="form-control text-end" value="<%= system.backupRetentionDays %>">
+              <span class="input-group-text">วัน</span>
+            </div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">การใช้พื้นที่</div></div>
+          <div class="settings-row-control">
+            <%
+              const usedPct = (system.storageUsed / system.storageQuota * 100).toFixed(1);
+            %>
+            <div class="d-flex justify-content-between mb-1 fs-85">
+              <span><%= system.storageUsed %> GB ใช้ไปแล้ว</span>
+              <span class="text-muted">จาก <%= system.storageQuota %> GB</span>
+            </div>
+            <div class="progress progress-8">
+              <div class="progress-bar bg-primary" style="width:<%= usedPct %>%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section mt-3">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">บันทึกกิจกรรม (Audit Log)</h6>
+          <div class="text-muted fs-82">เก็บประวัติการแก้ไขข้อมูลและการเข้าใช้งาน</div>
+        </div>
+        <a href="#" class="btn btn-light border btn-sm"><i class="bi bi-journal-text me-1"></i>ดูบันทึก</a>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">บันทึกการแก้ไขข้อมูล</div></div>
+          <div class="settings-row-control">
+            <div class="form-check form-switch">
+              <input class="form-check-input switch-lg" type="checkbox" checked>
+              <span class="ms-1 fs-85 text-success">เปิดใช้งาน</span>
+            </div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">เก็บประวัติย้อนหลัง</div></div>
+          <div class="settings-row-control">
+            <div class="input-group" style="max-width:200px">
+              <input class="form-control text-end" value="365">
+              <span class="input-group-text">วัน</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section mt-3 border border-danger border-opacity-25">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700 text-danger">เขตอันตราย</h6>
+          <div class="text-muted fs-82">การกระทำต่อไปนี้ไม่สามารถย้อนกลับได้</div>
+        </div>
+      </div>
+      <div class="settings-section-body">
+        <div class="d-flex flex-column gap-2">
+          <button class="btn btn-outline-danger btn-sm text-start"><i class="bi bi-eraser me-2"></i>ล้างข้อมูล Cache ทั้งหมด</button>
+          <button class="btn btn-outline-danger btn-sm text-start"><i class="bi bi-arrow-counterclockwise me-2"></i>รีเซ็ตการตั้งค่ากลับเป็นค่าเริ่มต้น</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

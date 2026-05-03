@@ -1,0 +1,144 @@
+<%- include('_header') %>
+
+<div class="row g-3">
+  <div class="col-lg-4 col-xl-3"><%- include('_nav') %></div>
+  <div class="col-lg-8 col-xl-9">
+    <form method="POST" action="/settings/security" class="settings-section">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">นโยบายรหัสผ่าน</h6>
+          <div class="text-muted fs-82">กำหนดความปลอดภัยขั้นต่ำของรหัสผ่านในระบบ</div>
+        </div>
+        <button class="btn btn-primary btn-sm"><i class="bi bi-check2 me-1"></i>บันทึก</button>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">ความยาวขั้นต่ำ</div></div>
+          <div class="settings-row-control">
+            <div class="input-group" style="max-width:160px">
+              <input class="form-control text-end" value="<%= security.passwordMinLength %>">
+              <span class="input-group-text">ตัว</span>
+            </div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">ข้อกำหนด</div></div>
+          <div class="settings-row-control">
+            <div class="d-flex flex-column gap-2">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="reqU" <%= security.requireUppercase ? 'checked' : '' %>>
+                <label class="form-check-label fs-88" for="reqU">ต้องมีตัวพิมพ์ใหญ่ (A–Z)</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="reqN" <%= security.requireNumber ? 'checked' : '' %>>
+                <label class="form-check-label fs-88" for="reqN">ต้องมีตัวเลข (0–9)</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="reqS" <%= security.requireSymbol ? 'checked' : '' %>>
+                <label class="form-check-label fs-88" for="reqS">ต้องมีอักขระพิเศษ (!@#$ ...)</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">หมดอายุรหัสผ่าน</div><div class="help">บังคับเปลี่ยนรหัสทุกกี่วัน</div></div>
+          <div class="settings-row-control">
+            <div class="input-group" style="max-width:160px">
+              <input class="form-control text-end" value="<%= security.passwordExpireDays %>">
+              <span class="input-group-text">วัน</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div class="settings-section mt-3">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">การเข้าใช้งาน</h6>
+          <div class="text-muted fs-82">2FA และการป้องกันการเข้าระบบ</div>
+        </div>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="label">Two-Factor Authentication (2FA)</div>
+            <div class="help">บังคับยืนยันตัวตน 2 ขั้นตอนเมื่อเข้าระบบ</div>
+          </div>
+          <div class="settings-row-control">
+            <div class="form-check form-switch">
+              <input class="form-check-input switch-lg" type="checkbox" <%= security.twoFactorEnabled ? 'checked' : '' %>>
+              <span class="ms-1 fs-85 text-success">เปิดใช้งานสำหรับทุกบัญชี</span>
+            </div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">Session Timeout</div><div class="help">ออกจากระบบอัตโนมัติเมื่อไม่มีการใช้งาน</div></div>
+          <div class="settings-row-control">
+            <div class="input-group" style="max-width:160px">
+              <input class="form-control text-end" value="<%= security.sessionTimeoutMin %>">
+              <span class="input-group-text">นาที</span>
+            </div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">ล็อกบัญชีหลังพยายามเข้าผิด</div></div>
+          <div class="settings-row-control">
+            <div class="input-group" style="max-width:160px">
+              <input class="form-control text-end" value="<%= security.loginAttempts %>">
+              <span class="input-group-text">ครั้ง</span>
+            </div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-info"><div class="label">IP Whitelist</div><div class="help">อนุญาตให้เข้าเฉพาะ IP เหล่านี้ (เว้นว่าง = อนุญาตทุก IP)</div></div>
+          <div class="settings-row-control">
+            <textarea class="form-control" rows="2" placeholder="เช่น 203.150.21.0/24, 110.49.233.12"><%= security.ipWhitelist %></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section mt-3">
+      <div class="settings-section-header">
+        <div>
+          <h6 class="mb-0 fw-700">ประวัติการเข้าระบบล่าสุด</h6>
+          <div class="text-muted fs-82">10 รายการล่าสุด</div>
+        </div>
+        <a href="#" class="btn btn-light border btn-sm">ดูทั้งหมด</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th class="ps-4">ผู้ใช้</th>
+              <th>IP Address</th>
+              <th>อุปกรณ์</th>
+              <th>เวลา</th>
+              <th class="pe-4">ผลลัพธ์</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% recentLogins.forEach(l => { %>
+              <tr>
+                <td class="ps-4 fs-88"><%= l.user %></td>
+                <td><code class="fs-82"><%= l.ip %></code></td>
+                <td class="fs-85 text-muted"><%= l.device %></td>
+                <td class="fs-85"><%= l.when %></td>
+                <td class="pe-4">
+                  <% if (l.status === 'success') { %>
+                    <span class="badge-status bg-success bg-opacity-15 text-success"><i class="bi bi-check-circle me-1"></i>สำเร็จ</span>
+                  <% } else { %>
+                    <span class="badge-status bg-danger bg-opacity-15 text-danger"><i class="bi bi-x-circle me-1"></i>ล้มเหลว</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

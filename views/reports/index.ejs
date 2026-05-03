@@ -1,0 +1,114 @@
+<%- include('../partials/header', { title: 'รายงาน', page: 'reports', breadcrumb: 'ศูนย์รายงาน' }) %>
+
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+  <div>
+    <h5 class="mb-0 fw-700">ศูนย์รายงาน</h5>
+    <p class="text-muted mb-0 fs-85">รวมรายงานทั้งหมดของระบบสินเชื่อ — เลือกหัวข้อที่ต้องการดู</p>
+  </div>
+  <div class="d-flex gap-2">
+    <button class="btn btn-light border"><i class="bi bi-calendar-range me-1"></i>เลือกช่วงวันที่</button>
+    <button class="btn btn-primary"><i class="bi bi-download me-1"></i>ส่งออกทั้งหมด</button>
+  </div>
+</div>
+
+<!-- KPI overview -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start justify-content-between mb-3">
+          <div class="icon-box bg-primary bg-opacity-10 text-primary"><i class="bi bi-file-earmark-text"></i></div>
+          <span class="kpi-pill bg-success bg-opacity-15 text-success">+12%</span>
+        </div>
+        <div class="h3 fw-700 mb-0">1,248</div>
+        <div class="text-muted mt-1 fs-85">สัญญาทั้งหมด</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start justify-content-between mb-3">
+          <div class="icon-box bg-info bg-opacity-10 text-info"><i class="bi bi-currency-exchange"></i></div>
+          <span class="kpi-pill bg-info bg-opacity-15 text-info">YTD</span>
+        </div>
+        <div class="h3 fw-700 mb-0">฿248.5M</div>
+        <div class="text-muted mt-1 fs-85">ยอดอนุมัติรวม</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start justify-content-between mb-3">
+          <div class="icon-box bg-success bg-opacity-10 text-success"><i class="bi bi-cash-stack"></i></div>
+          <span class="kpi-pill bg-success bg-opacity-15 text-success">+8.4%</span>
+        </div>
+        <div class="h3 fw-700 mb-0">฿12.5M</div>
+        <div class="text-muted mt-1 fs-85">รายรับรวม (YTD)</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start justify-content-between mb-3">
+          <div class="icon-box bg-danger bg-opacity-10 text-danger"><i class="bi bi-exclamation-triangle"></i></div>
+          <span class="kpi-pill bg-danger bg-opacity-15 text-danger">2.49%</span>
+        </div>
+        <div class="h3 fw-700 mb-0">฿4.2M</div>
+        <div class="text-muted mt-1 fs-85">หนี้ค้างชำระ (NPL)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Report cards -->
+<h6 class="fw-600 mb-3">รายงานทั้งหมด</h6>
+<div class="row g-3">
+  <% reportList.forEach(r => { %>
+    <div class="col-md-6 col-xl-4">
+      <a href="<%= r.href %>" class="text-decoration-none text-reset">
+        <div class="card report-card">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-start gap-3 mb-3">
+              <div class="icon-box-lg" style="background: <%= r.color %>15; color: <%= r.color %>;">
+                <i class="bi <%= r.icon %>"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex align-items-center justify-content-between gap-2">
+                  <h6 class="mb-0 fw-700"><%= r.title %></h6>
+                  <span class="report-tag"><%= r.tag %></span>
+                </div>
+                <p class="text-muted fs-85 mb-0 mt-1"><%= r.desc %></p>
+              </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-between border-top pt-3">
+              <span class="text-primary fs-85 fw-500">เปิดรายงาน</span>
+              <i class="bi bi-arrow-right text-primary"></i>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+  <% }) %>
+</div>
+
+<!-- Quick info -->
+<div class="card mt-4">
+  <div class="card-body p-4">
+    <div class="d-flex align-items-start gap-3">
+      <div class="icon-box bg-primary bg-opacity-10 text-primary"><i class="bi bi-info-circle"></i></div>
+      <div>
+        <h6 class="fw-600 mb-1">เกี่ยวกับรายงาน</h6>
+        <p class="text-muted fs-85 mb-0">
+          ทุกรายงานสามารถกรองตามช่วงวันที่ ประเภทสินเชื่อ และสถานะได้
+          พร้อมส่งออกเป็นไฟล์ Excel หรือ PDF เพื่อนำไปใช้ต่อ
+          ข้อมูลจะอัปเดตทุกสิ้นวัน
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

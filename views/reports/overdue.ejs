@@ -1,0 +1,171 @@
+<%- include('../partials/header', { title: 'รายงานหนี้ค้างชำระ', page: 'reports-overdue', breadcrumb: 'รายงานหนี้ค้างชำระ' }) %>
+
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+  <div>
+    <a href="/reports" class="text-muted text-decoration-none fs-85"><i class="bi bi-arrow-left"></i> กลับไปยังศูนย์รายงาน</a>
+    <h5 class="mb-0 fw-700 mt-1">รายงานหนี้ค้างชำระ (Aging)</h5>
+    <p class="text-muted mb-0 fs-85">รายงานยอดค้างชำระแยกตามอายุหนี้ พร้อมรายชื่อลูกหนี้ที่ต้องติดตาม</p>
+  </div>
+  <div class="d-flex gap-2">
+    <button class="btn btn-light border"><i class="bi bi-printer me-1"></i>พิมพ์</button>
+    <button class="btn btn-success"><i class="bi bi-file-earmark-excel me-1"></i>Excel</button>
+    <button class="btn btn-danger"><i class="bi bi-file-earmark-pdf me-1"></i>PDF</button>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="text-muted fs-85">ยอดค้างชำระรวม</div>
+        <div class="h3 fw-700 mb-1 mt-1 text-danger">฿<%= fmt(kpi.totalOverdue, 0) %></div>
+        <div class="fs-78 text-muted">รวมเงินต้น + ดอกเบี้ย + ค่าปรับ</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="text-muted fs-85">บัญชีที่ค้างชำระ</div>
+        <div class="h3 fw-700 mb-1 mt-1"><%= fmtInt(kpi.accounts) %> <span class="fs-85 text-muted fw-500">บัญชี</span></div>
+        <div class="fs-78 text-muted">จากทั้งหมด 892 สัญญาที่ active</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="text-muted fs-85">NPL Ratio</div>
+        <div class="h3 fw-700 mb-1 mt-1 text-warning"><%= kpi.nplRatio %>%</div>
+        <div class="fs-78 text-muted">เกณฑ์เตือน 3.0%</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="text-muted fs-85">ค้างชำระนานสุด</div>
+        <div class="h3 fw-700 mb-1 mt-1"><%= kpi.oldestDays %> <span class="fs-85 text-muted fw-500">วัน</span></div>
+        <div class="fs-78 text-danger">ควรเร่งติดตาม</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Aging buckets -->
+<div class="row g-3 mb-4">
+  <% const totalAgingAmt = aging.reduce((s,x)=>s+x.amount,0); %>
+  <% aging.forEach((a, i) => { %>
+    <div class="col-sm-6 col-xl-3">
+      <div class="aging-card bucket-<%= i+1 %>">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <div class="fw-600 fs-90"><%= a.bucket %></div>
+          <span class="kpi-pill" style="background:<%= a.color %>20; color:<%= a.color %>">
+            <%= ((a.amount/totalAgingAmt)*100).toFixed(1) %>%
+          </span>
+        </div>
+        <div class="h4 fw-700 mb-1">฿<%= fmt(a.amount, 0) %></div>
+        <div class="fs-82 text-muted"><%= a.count %> บัญชี</div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<!-- Aging composition bar -->
+<div class="card mb-4">
+  <div class="card-body p-4">
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+      <h6 class="mb-0 fw-600">โครงสร้างยอดค้างชำระตามอายุหนี้</h6>
+      <span class="text-muted fs-85">รวม ฿<%= fmt(totalAgingAmt, 0) %></span>
+    </div>
+    <div class="progress progress-8 mb-2">
+      <% aging.forEach(a => { %>
+        <div class="progress-bar" style="width:<%= (a.amount/totalAgingAmt*100).toFixed(1) %>%; background:<%= a.color %>"
+             title="<%= a.bucket %>: ฿<%= fmt(a.amount, 0) %>"></div>
+      <% }) %>
+    </div>
+    <div class="d-flex flex-wrap gap-3 fs-82">
+      <% aging.forEach(a => { %>
+        <span>
+          <span class="d-inline-block rounded me-1" style="width:10px;height:10px;background:<%= a.color %>;vertical-align:middle"></span>
+          <%= a.bucket %>: <strong>฿<%= fmt(a.amount, 0) %></strong>
+        </span>
+      <% }) %>
+    </div>
+  </div>
+</div>
+
+<!-- Detail table -->
+<div class="card">
+  <div class="card-body p-0">
+    <div class="d-flex align-items-center justify-content-between p-4 pb-3 flex-wrap gap-2">
+      <h6 class="mb-0 fw-600">รายชื่อบัญชีค้างชำระ</h6>
+      <div class="d-flex gap-2">
+        <select class="form-select form-select-sm">
+          <option>เรียงตาม: ค้างนานที่สุด</option>
+          <option>เรียงตาม: ยอดมากที่สุด</option>
+          <option>เรียงตาม: เลขที่สัญญา</option>
+        </select>
+        <button class="btn btn-sm btn-light border"><i class="bi bi-funnel"></i></button>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle report-table">
+        <thead>
+          <tr>
+            <th class="ps-4">เลขที่สัญญา</th>
+            <th>ผู้กู้</th>
+            <th>ประเภท</th>
+            <th class="text-end">ยอดค้างชำระ</th>
+            <th class="text-center">วันค้าง</th>
+            <th>ช่วงอายุหนี้</th>
+            <th class="text-end pe-4">การดำเนินการ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% accounts.forEach(a => { %>
+            <tr>
+              <td class="ps-4">
+                <a href="/loans/<%= a.loanId %>" class="text-primary fw-500 text-decoration-none"><%= a.loanId %></a>
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="rounded-circle d-flex align-items-center justify-content-center text-white avatar-md flex-shrink-0"
+                       style="background:<%= a.color %>"><%= a.name.charAt(0) %></div>
+                  <div>
+                    <div class="fs-88 fw-500"><%= a.name %></div>
+                    <div class="text-muted fs-78"><%= a.phone %></div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="text-muted fs-88"><%= a.type %></span></td>
+              <td class="text-end fw-600 text-danger">฿<%= fmt(a.amount) %></td>
+              <td class="text-center">
+                <% if (a.days >= 90) { %>
+                  <span class="badge-status bg-danger bg-opacity-15 text-danger"><%= a.days %> วัน</span>
+                <% } else if (a.days >= 60) { %>
+                  <span class="badge-status bg-warning bg-opacity-20 text-warning"><%= a.days %> วัน</span>
+                <% } else { %>
+                  <span class="badge-status bg-secondary bg-opacity-15 text-secondary"><%= a.days %> วัน</span>
+                <% } %>
+              </td>
+              <td><span class="fs-85"><%= a.bucket %> วัน</span></td>
+              <td class="text-end pe-4">
+                <button class="btn btn-sm btn-light border" title="โทรติดตาม"><i class="bi bi-telephone"></i></button>
+                <button class="btn btn-sm btn-light border" title="ส่ง SMS"><i class="bi bi-envelope"></i></button>
+                <a href="/loans/<%= a.loanId %>" class="btn btn-sm btn-primary"><i class="bi bi-eye me-1"></i>ดู</a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <div class="p-3 border-top fs-82 text-muted">
+      <i class="bi bi-info-circle me-1"></i>
+      หมายเหตุ: NPL = สินเชื่อที่ค้างชำระเกิน 90 วัน — ต้องตั้งสำรองตามเกณฑ์ ธปท.
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

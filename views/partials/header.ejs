@@ -58,9 +58,28 @@
           <i class="bi bi-people-fill me-2"></i> ข้อมูลลูกค้า
         </a>
       </li>
+    </ul>
+
+    <div class="nav-section">รายงาน</div>
+    <ul class="nav flex-column gap-1">
       <li class="nav-item">
-        <a class="nav-link" href="#">
-          <i class="bi bi-graph-up-arrow me-2"></i> รายงาน
+        <a class="nav-link <%= page==='reports' ? 'active' : '' %>" href="/reports">
+          <i class="bi bi-graph-up-arrow me-2"></i> ศูนย์รายงาน
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <%= page==='reports-summary' ? 'active' : '' %>" href="/reports/summary">
+          <i class="bi bi-bar-chart-line me-2"></i> สรุปสินเชื่อ
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <%= page==='reports-revenue' ? 'active' : '' %>" href="/reports/revenue">
+          <i class="bi bi-cash-stack me-2"></i> รายรับ
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <%= page==='reports-overdue' ? 'active' : '' %>" href="/reports/overdue">
+          <i class="bi bi-exclamation-triangle me-2"></i> หนี้ค้างชำระ
         </a>
       </li>
     </ul>
@@ -68,7 +87,7 @@
     <div class="nav-section">ระบบ</div>
     <ul class="nav flex-column gap-1">
       <li class="nav-item">
-        <a class="nav-link" href="#">
+        <a class="nav-link <%= page==='settings' ? 'active' : '' %>" href="/settings">
           <i class="bi bi-gear-fill me-2"></i> ตั้งค่า
         </a>
       </li>

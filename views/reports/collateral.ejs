@@ -1,0 +1,180 @@
+<%- include('../partials/header', { title: 'รายงานหลักประกัน', page: 'reports', breadcrumb: 'รายงานหลักประกัน' }) %>
+
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+  <div>
+    <a href="/reports" class="text-muted text-decoration-none fs-85"><i class="bi bi-arrow-left"></i> กลับไปยังศูนย์รายงาน</a>
+    <h5 class="mb-0 fw-700 mt-1">รายงานหลักประกัน</h5>
+    <p class="text-muted mb-0 fs-85">มูลค่าหลักประกันรวม สถานะ และอัตราส่วนค้ำประกันต่อยอดเงินต้น</p>
+  </div>
+  <div class="d-flex gap-2">
+    <button class="btn btn-light border"><i class="bi bi-printer me-1"></i>พิมพ์</button>
+    <button class="btn btn-success"><i class="bi bi-file-earmark-excel me-1"></i>Excel</button>
+    <button class="btn btn-danger"><i class="bi bi-file-earmark-pdf me-1"></i>PDF</button>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="text-muted fs-85">มูลค่าหลักประกันรวม</div>
+        <div class="h3 fw-700 mb-1 mt-1">฿<%= fmt(kpi.totalValue, 0) %></div>
+        <div class="fs-78 text-muted"><%= kpi.totalCount %> รายการ</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="text-muted fs-85">มูลค่าที่ใช้ค้ำอยู่</div>
+        <div class="h3 fw-700 mb-1 mt-1">฿<%= fmt(kpi.inUseValue, 0) %></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="text-muted fs-85">Coverage Ratio</div>
+        <div class="h3 fw-700 mb-1 mt-1 <%= kpi.coverage >= 100 ? 'text-success' : 'text-warning' %>"><%= kpi.coverage.toFixed(1) %>%</div>
+        <div class="fs-78 text-muted">มูลค่าค้ำ / ยอดคงเหลือ</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="text-muted fs-85">ประเภทหลักประกัน</div>
+        <div class="h3 fw-700 mb-1 mt-1"><%= byType.length %> <span class="fs-85 text-muted fw-500">ประเภท</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- By type & status -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-7">
+    <div class="card h-100">
+      <div class="card-body p-4">
+        <h6 class="mb-3 fw-600">หลักประกันแยกตามประเภท</h6>
+        <% const totalTypeVal = byType.reduce((s,x)=>s+x.value,0); %>
+        <div class="d-flex flex-column gap-3">
+          <% byType.forEach(t => { %>
+            <div>
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <span class="fs-88">
+                  <i class="bi <%= t.icon %> me-2" style="color:<%= t.color %>"></i>
+                  <%= t.type %>
+                  <span class="text-muted fs-78 ms-1">(<%= t.count %> รายการ)</span>
+                </span>
+                <span class="fw-600 fs-85">฿<%= fmt(t.value, 0) %></span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <div class="progress flex-grow-1">
+                  <div class="progress-bar" style="width:<%= (t.value/totalTypeVal*100).toFixed(1) %>%; background:<%= t.color %>"></div>
+                </div>
+                <span class="fs-80 text-muted" style="min-width:42px;text-align:right"><%= ((t.value/totalTypeVal)*100).toFixed(1) %>%</span>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card h-100">
+      <div class="card-body p-4">
+        <h6 class="mb-3 fw-600">สถานะหลักประกัน</h6>
+        <div class="d-flex flex-column gap-3">
+          <% byStatus.forEach(s => { %>
+            <div class="bg-surface rounded p-3">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <span class="fs-88 fw-500">
+                  <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background:<%= s.color %>"></span>
+                  <%= s.status %>
+                </span>
+                <span class="badge" style="background:<%= s.color %>20; color:<%= s.color %>"><%= s.count %> รายการ</span>
+              </div>
+              <div class="fw-600 fs-95">฿<%= fmt(s.value, 0) %></div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail table -->
+<div class="card">
+  <div class="card-body p-0">
+    <div class="d-flex align-items-center justify-content-between p-4 pb-3 flex-wrap gap-2">
+      <h6 class="mb-0 fw-600">รายการหลักประกันทั้งหมด</h6>
+      <div class="d-flex gap-2">
+        <select class="form-select form-select-sm">
+          <option>ทุกสถานะ</option>
+          <option>ใช้ค้ำอยู่</option>
+          <option>ว่าง</option>
+          <option>ปลดแล้ว</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle report-table">
+        <thead>
+          <tr>
+            <th class="ps-4">รหัส</th>
+            <th>หลักประกัน</th>
+            <th>ประเภท</th>
+            <th class="text-end">มูลค่าประเมิน</th>
+            <th>สถานะ</th>
+            <th>สัญญาที่ผูก</th>
+            <th class="pe-4">วันที่เพิ่ม</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% items.forEach(c => { %>
+            <tr>
+              <td class="ps-4">
+                <a href="/collaterals/<%= c.id %>" class="text-primary fw-500 text-decoration-none"><%= c.id %></a>
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="rounded d-flex align-items-center justify-content-center flex-shrink-0"
+                       style="width:36px;height:36px;background:<%= c.color %>15;color:<%= c.color %>">
+                    <i class="bi <%= c.icon %>"></i>
+                  </div>
+                  <div>
+                    <div class="fs-88 fw-500"><%= c.title %></div>
+                    <div class="text-muted fs-78"><%= c.description.length > 50 ? c.description.substring(0,50)+'...' : c.description %></div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="fs-85"><%= c.type %></span></td>
+              <td class="text-end fw-600">฿<%= c.estimatedValue %></td>
+              <td>
+                <% if (c.status === 'ใช้ค้ำอยู่') { %>
+                  <span class="badge-status bg-primary bg-opacity-15 text-primary"><i class="bi bi-shield-fill me-1"></i><%= c.status %></span>
+                <% } else if (c.status === 'ว่าง') { %>
+                  <span class="badge-status bg-success bg-opacity-15 text-success"><%= c.status %></span>
+                <% } else { %>
+                  <span class="badge-status bg-secondary bg-opacity-15 text-secondary"><%= c.status %></span>
+                <% } %>
+              </td>
+              <td>
+                <% if (c.loanId) { %>
+                  <a href="/loans/<%= c.loanId %>" class="text-primary fs-85 text-decoration-none"><%= c.loanId %></a>
+                <% } else { %>
+                  <span class="text-muted fs-85">—</span>
+                <% } %>
+              </td>
+              <td class="text-muted fs-85 pe-4"><%= c.addedDate %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,3 +1,5 @@
+const error = require("../src/error/error");
+const { successCodeMessage } = require("../src/code");
 const { mockLoans } = require("../data/loan");
 const { mockCollaterals, collateralTypes } = require("../data/collateral");
 const { mockCustomers } = require("../data/customer");
@@ -47,6 +49,8 @@ async function apply(req, res, next) {
     let occupation = await Occupation.find({}).sort({
       sort: 1
     });
+    console.log(occupation);
+
     return res.render("main", {
       page: "loan/apply",
       title: "ยื่นขอสินเชื่อ",
@@ -56,14 +60,6 @@ async function apply(req, res, next) {
       existingCustomers: mockCustomers,
       occupation
     });
-  } catch (e) {
-    return res.redirect("/loan");
-  }
-}
-
-async function applySubmit(req, res, next) {
-  try {
-    return res.redirect("/loan");
   } catch (e) {
     return res.redirect("/loan");
   }
@@ -134,10 +130,52 @@ async function detail(req, res, next) {
     return res.redirect("/loan");
   }
 }
+async function loanCreatePost(req, res, next) {
+  try {
+    let {
+      customerMode,
+      existingCustomerId,
+      namePrefix,
+      firstName,
+      lastName,
+      idCard,
+      dateOfbirth,
+      age,
+      phone,
+      email,
+      address,
+      occupation,
+      companyName,
+      companyAddress,
+      income,
+      incomeOther,
+      debt,
+      loanType,
+      purposeOfloan,
+      loanAmount,
+      loanTerm,
+      loanRate,
+      hasCollateral,
+      collateralMode,
+      collateralType,
+      collateralValue,
+      existingCollateralId
+    } = req.body;
+    console.log(req.body);
 
+    res.send({
+      code: 0,
+      message: successCodeMessage({ code: 3 }),
+      result: true
+    });
+  } catch (e) {
+    console.log(e);
+    return res.send(error(500));
+  }
+}
 module.exports = {
   index,
   apply,
-  applySubmit,
-  detail
+  detail,
+  loanCreatePost
 };

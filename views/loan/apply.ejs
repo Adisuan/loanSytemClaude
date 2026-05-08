@@ -174,15 +174,15 @@
             </div>
             <div class="col-md-5">
               <label class="form-label">ชื่อจริง <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="firstName" placeholder="ชื่อจริง" >
+              <input type="text" class="form-control" id="firstName" placeholder="ชื่อจริง" value="firstName">
             </div>
             <div class="col-md-5">
               <label class="form-label">นามสกุล <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="lastName"  placeholder="นามสกุล" >
+              <input type="text" class="form-control" id="lastName"  placeholder="นามสกุล" value="lastName">
             </div>
             <div class="col-md-6">
               <label class="form-label">เลขบัตรประชาชน <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="idCard" placeholder="x-xxxx-xxxxx-xx-x" maxlength="13" required>
+              <input type="text" class="form-control" id="idCard" placeholder="x-xxxx-xxxxx-xx-x" maxlength="13" value="1234567890123">
             </div>
             <div class="col-md-3">
               <label class="form-label">วันเกิด</label>
@@ -195,16 +195,16 @@
             </div>
             <div class="col-md-6">
               <label class="form-label">เบอร์โทรศัพท์ <span class="text-danger">*</span></label>
-              <input type="tel" class="form-control" id="phone" placeholder="เบอร์โทรศัพท์" >
+              <input type="tel" class="form-control" id="phone" placeholder="เบอร์โทรศัพท์" value="0999999999">
             </div>
             <div class="col-md-6">
               <label class="form-label">อีเมล</label>
-              <input type="email" class="form-control" id="email" placeholder="example@email.com">
+              <input type="email" class="form-control" id="email" placeholder="example@email.com" value="example@email.com">
             </div>
             <div class="col-12">
               <label class="form-label">ที่อยู่ปัจจุบัน <span class="text-danger">*</span></label>
               <textarea class="form-control" id="address" rows="3"
-                placeholder="บ้านเลขที่ ถนน ตำบล/แขวง อำเภอ/เขต จังหวัด รหัสไปรษณีย์"></textarea>
+                placeholder="บ้านเลขที่ ถนน ตำบล/แขวง อำเภอ/เขต จังหวัด รหัสไปรษณีย์">บ้านเลขที่ ถนน ตำบล/แขวง อำเภอ/เขต จังหวัด รหัสไปรษณีย์</textarea>
             </div>
           </div>
         </div>
@@ -221,7 +221,7 @@
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">อาชีพ <span class="text-danger">*</span></label>
-              <select class="form-select" id="occupation" required>
+              <select class="form-select select-select2" id="occupation">
                 <option value="">-- เลือกอาชีพ --</option>
                 <% occupation.forEach(item => { %>
                  <option value="<%= item.id %>"><%= item?.name?.th %></option>

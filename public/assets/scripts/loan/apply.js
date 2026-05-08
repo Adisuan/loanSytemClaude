@@ -1,6 +1,7 @@
 const typeNames = { personal: "สินเชื่อบุคคล", business: "สินเชื่อธุรกิจ", home: "สินเชื่อบ้าน", car: "สินเชื่อรถยนต์" };
 let fpDateOfBirth;
 $(document).ready(function () {
+  initSelect2({ select: ".select-select2" });
   initSelect2({ select: "#namePrefix" });
   fpDateOfBirth = flatpickr("#dateOfbirth", {
     locale: "th",
@@ -396,16 +397,16 @@ $(document).on("click", "#btnCreate", function () {
     });
     return false;
   }
-  let phoneDigits = phone.replace(/\D/g, "");
-  if (phoneDigits.length < 9 || phoneDigits.length > 10) {
-    $("#phone").focus();
-    sweetAlert2Toast({
-      icon: "warning",
-      text: "เบอร์โทรศัพท์ไม่ถูกต้อง",
-      confirmButtonClass: "btn btn-danger waves-effect waves-light"
-    });
-    return false;
-  }
+  // let phoneDigits = phone.replace(/\D/g, "");
+  // if (phoneDigits.length < 9 || phoneDigits.length > 10) {
+  //   $("#phone").focus();
+  //   sweetAlert2Toast({
+  //     icon: "warning",
+  //     text: "เบอร์โทรศัพท์ไม่ถูกต้อง",
+  //     confirmButtonClass: "btn btn-danger waves-effect waves-light"
+  //   });
+  //   return false;
+  // }
 
   let email = $("#email").val();
 
@@ -525,8 +526,6 @@ $(document).on("click", "#btnCreate", function () {
       }
     }
   }
-
-  // ===== ส่งฟอร์ม =====
   sweetAlert2Loading();
   $.ajax({
     url: "/loan/create",
@@ -564,6 +563,7 @@ $(document).on("click", "#btnCreate", function () {
     }),
     success: function (response) {
       if (response.code == 0) {
+        sweetAlert2Toast("success", response.message);
       } else {
         sweetAlert2Toast("warning", response.message);
       }

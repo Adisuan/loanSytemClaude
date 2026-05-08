@@ -4,7 +4,7 @@ const loanController = require("../controllers/loanController");
 
 router.get("/", loanController.index);
 router.get("/apply", loanController.apply);
-router.post("/apply", loanController.applySubmit);
+router.post("/create", loanController.loanCreatePost);
 router.get("/:id", loanController.detail);
 
 module.exports = router;

@@ -58,5 +58,5 @@ schema.index({
 schema.index({ idCard: 1 });
 schema.index({ phone: 1 });
 
-const Customer = mongoose.model("Customer", schema, "customeruser");
+const Customer = mongoose.model("Customer", schema, "customer");
 module.exports = Customer;

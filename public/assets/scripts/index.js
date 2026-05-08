@@ -95,3 +95,17 @@ function calcAgeFromDate(dob) {
   if (mDiff < 0 || (mDiff === 0 && today.getDate() < dob.getDate())) age--;
   return age >= 0 ? age : "";
 }
+$(document).on("keypress", ".number", function (e) {
+  let key = e.which || e.keyCode;
+  let char = String.fromCharCode(key);
+
+  // อนุญาตเฉพาะ 0-9 และจุด
+  if (/^[0-9.]$/.test(char)) {
+    // ป้องกันพิมพ์จุดมากกว่า 1 จุด
+    if (char === "." && $(this).val().includes(".")) {
+      return false;
+    }
+    return true;
+  }
+  return false;
+});

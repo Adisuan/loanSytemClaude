@@ -1,6 +1,6 @@
 const mongoose = require("./connectDB");
 const Schema = mongoose.Schema;
-const userSchema = Schema(
+const schema = Schema(
   {
     code: {
       type: String,
@@ -39,9 +39,9 @@ const userSchema = Schema(
     timestamps: true
   }
 );
-userSchema.index({
+schema.index({
   createdAt: 1
 });
 
-const User = mongoose.model("User", userSchema, "user");
-module.exports = User;
+const Loan = mongoose.model("Loan", schema, "loan");
+module.exports = Loan;

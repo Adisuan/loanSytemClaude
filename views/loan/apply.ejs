@@ -110,7 +110,7 @@
                     </span>
                   </div>
                 </label>
-              <% }) %>
+              <% }) %>z
             </div>
             <div id="customerListEmpty" class="text-muted fs-85 text-center py-3 d-none">
               ไม่พบลูกค้าที่ตรงกับคำค้นหา
@@ -128,7 +128,7 @@
               <select class="form-select" id="namePrefix" >
                 <option value="">-- เลือกคำนำหน้า --</option>
                 <optgroup label="ทั่วไป">
-                  <option value="นาย">นาย</option>
+                  <option value="นาย" selected>นาย</option>
                   <option value="นาง">นาง</option>
                   <option value="นางสาว">นางสาว</option>
                   <option value="เด็กชาย">เด็กชาย</option>
@@ -221,10 +221,10 @@
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">อาชีพ <span class="text-danger">*</span></label>
-              <select class="form-select select-select2" id="occupation">
+              <select class="form-select select-select2" id="occupationId">
                 <option value="">-- เลือกอาชีพ --</option>
                 <% occupation.forEach(item => { %>
-                 <option value="<%= item.id %>"><%= item?.name?.th %></option>
+                 <option value="<%= item.id %>" selected><%= item?.name?.th %></option>
                 <% }) %>
               </select>
             </div>
@@ -239,15 +239,15 @@
             </div>
             <div class="col-md-4">
               <label class="form-label">รายได้ต่อเดือน (บาท) <span class="text-danger">*</span></label>
-              <input type="number" class="form-control" id="income"  placeholder="0.00" required>
+              <input type="number" inputmode="numeric" class="form-control number" id="income"  placeholder="0.00" value="15000">
             </div>
             <div class="col-md-4">
               <label class="form-label">รายได้อื่นๆ (บาท)</label>
-              <input type="number" class="form-control" id="incomeOther"  placeholder="0.00">
+              <input type="number" inputmode="numeric" class="form-control number" id="incomeOther"  placeholder="0.00">
             </div>
             <div class="col-md-4">
               <label class="form-label">ภาระหนี้ต่อเดือน (บาท)</label>
-              <input type="number" class="form-control" id="debt" placeholder="0.00">
+              <input type="number" number class="form-control number" id="debt" placeholder="0.00">
             </div>
           </div>
         </div>
@@ -264,9 +264,9 @@
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">ประเภทสินเชื่อ <span class="text-danger">*</span></label>
-              <select class="form-select" id="loanType" required>
+              <select class="form-select select-select2" id="loanType" >
                 <option value="">-- เลือกประเภทสินเชื่อ --</option>
-                <option value="personal">สินเชื่อบุคคล</option>
+                <option value="personal" selected>สินเชื่อบุคคล</option>
                 <option value="business">สินเชื่อธุรกิจ</option>
                 <option value="home">สินเชื่อบ้าน</option>
                 <option value="car">สินเชื่อรถยนต์</option>
@@ -278,7 +278,7 @@
             </div>
             <div class="col-md-4">
               <label class="form-label">วงเงินที่ต้องการ (บาท) <span class="text-danger">*</span></label>
-              <input type="number" class="form-control" id="loanAmount" placeholder="0" required>
+              <input type="number" inputmode="numeric" class="form-control number" id="loanAmount" placeholder="0" value="50000">
             </div>
             <div class="col-md-4">
               <label class="form-label">ระยะเวลา (เดือน) <span class="text-danger">*</span></label>
@@ -286,7 +286,7 @@
                 <option value="">-- เลือก --</option>
                 <option value="3">3 เดือน</option>
                 <option value="6">6 เดือน</option>
-                <option value="12">12 เดือน</option>
+                <option value="12" selected>12 เดือน</option>
                 <option value="24">24 เดือน</option>
                 <option value="36">36 เดือน</option>
                 <option value="48">48 เดือน</option>
@@ -296,8 +296,8 @@
               </select>
             </div>
             <div class="col-md-4">
-              <label class="form-label">อัตราดอกเบี้ย (%/ปี)</label>
-              <input type="number" class="form-control" id="loanRate" value="7.5" step="0.1">
+              <label class="form-label">อัตราดอกเบี้ย (%/ปี) <span class="text-danger">*</span></label>
+              <input type="number" inputmode="numeric" class="form-control" id="loanRate" value="7.5" step="0.1">
             </div>
           </div>
 
@@ -440,8 +440,8 @@
                   </select>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label">มูลค่าประเมิน (บาท)</label>
-                  <input type="number" class="form-control" name="collateralValue" id="collateralValue"
+                  <label class="form-label">มูลค่าประเมิน (บาท) <span class="text-danger">*</span></label>
+                  <input type="number" inputmode="numeric" class="form-control number" id="collateralValue"
                     placeholder="0.00">
                 </div>
 
@@ -451,11 +451,11 @@
                   <div id="extra-land" class="row g-3" style="display:none;">
                     <div class="col-md-6">
                       <label class="form-label">เลขที่โฉนด / เลขที่ดิน</label>
-                      <input type="text" class="form-control" name="collateral_doc_no" placeholder="เลขที่โฉนด">
+                      <input type="text" class="form-control" id="collateraLandTitleDeedNumber" placeholder="เลขที่โฉนด">
                     </div>
                     <div class="col-md-6">
                       <label class="form-label">ที่ตั้ง</label>
-                      <input type="text" class="form-control" name="collateral_location"
+                      <input type="text" class="form-control" id="collateralLocation"
                         placeholder="ตำบล/แขวง อำเภอ/เขต จังหวัด">
                     </div>
                   </div>
@@ -463,29 +463,29 @@
                   <div id="extra-vehicle" class="row g-3" style="display:none;">
                     <div class="col-md-4">
                       <label class="form-label">ยี่ห้อ / รุ่น</label>
-                      <input type="text" class="form-control" name="collateral_vehicle_model"
+                      <input type="text" class="form-control" id="collateralVehicleModel" 
                         placeholder="เช่น Toyota Camry">
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">ทะเบียนรถ</label>
-                      <input type="text" class="form-control" name="collateral_plate" placeholder="กก 1234">
+                      <input type="text" class="form-control" id="collateralPlate" placeholder="กก 1234">
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">ปีจดทะเบียน</label>
-                      <input type="number" class="form-control" name="collateral_year" placeholder="เช่น 2563">
+                      <input type="number" class="form-control" id="collateralYear" placeholder="เช่น 2563">
                     </div>
                   </div>
                   <!-- อื่นๆ -->
                   <div id="extra-other" style="display:none;">
                     <label class="form-label">รายละเอียด</label>
-                    <input type="text" class="form-control" name="collateral_desc"
+                    <input type="text" class="form-control" id="collateralDescription"
                       placeholder="อธิบายรายละเอียดหลักค้ำประกัน">
                   </div>
                 </div>
 
                 <div class="col-12">
                   <label class="form-label">หมายเหตุเพิ่มเติม</label>
-                  <textarea class="form-control" rows="2" name="collateral_note"
+                  <textarea class="form-control" rows="3" id="collateralNote" 
                     placeholder="ข้อมูลเพิ่มเติมเกี่ยวกับหลักค้ำประกัน"></textarea>
                 </div>
               </div>

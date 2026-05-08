@@ -4,6 +4,11 @@ const { mockLoans } = require("../data/loan");
 const { mockCollaterals, collateralTypes } = require("../data/collateral");
 const { mockCustomers } = require("../data/customer");
 const Occupation = require("../models/occupationModel");
+const Customer = require("../models/customerModel");
+const Setting = require("../models/settingModel");
+const Loan = require("../models/loanModel");
+const { generateCustomerCode, generateLoanCode } = require("../helpers/db");
+
 let STATUS_MAP = {
   all: null,
   pending: "รออนุมัติ",
@@ -49,8 +54,6 @@ async function apply(req, res, next) {
     let occupation = await Occupation.find({}).sort({
       sort: 1
     });
-    console.log(occupation);
-
     return res.render("main", {
       page: "loan/apply",
       title: "ยื่นขอสินเชื่อ",
@@ -134,7 +137,7 @@ async function loanCreatePost(req, res, next) {
   try {
     let {
       customerMode,
-      existingCustomerId,
+      customerId,
       namePrefix,
       firstName,
       lastName,
@@ -144,7 +147,7 @@ async function loanCreatePost(req, res, next) {
       phone,
       email,
       address,
-      occupation,
+      occupationId,
       companyName,
       companyAddress,
       income,
@@ -161,8 +164,107 @@ async function loanCreatePost(req, res, next) {
       collateralValue,
       existingCollateralId
     } = req.body;
-    console.log(req.body);
+    if (customerMode == "new") {
+      let customer = await Customer.findOne({
+        idCard
+      });
+      if (!customer) {
+        for (let index = 0; index < 99; index++) {
+          let generateCode = await generateCustomerCode();
+          let customerExist = await Customer.exists({
+            code: generateCode.code
+          });
+          if (!customerExist) {
+            let customerCreate = await Customer.create({
+              code: generateCode.code,
+              name: {
+                prefix: namePrefix,
+                firstName,
+                lastName
+              },
+              idCard,
+              dateOfbirth,
+              phone,
+              email,
+              address,
+              occupationId,
+              companyName,
+              companyAddress,
+              income,
+              incomeOther,
+              debt
+            });
+            customerId = customerCreate.id;
+            break;
+          } else {
+            await Setting.updateOne(
+              {
+                name: "customerCode"
+              },
+              {
+                $inc: {
+                  "value.number": 1
+                }
+              }
+            );
+          }
+        }
+      } else {
+        customerId = customer.id;
+        await Customer.updateOne(
+          {
+            _id: customer.id
+          },
+          {
+            $set: {
+              name: {
+                prefix: namePrefix,
+                firstName,
+                lastName
+              },
+              idCard,
+              dateOfbirth,
+              phone,
+              email,
+              address,
+              occupationId,
+              companyName,
+              companyAddress,
+              income,
+              incomeOther,
+              debt
+            }
+          }
+        );
+      }
+    }
+    let loanCreate = null;
+    for (let index = 0; index < 99; index++) {
+      let loanCode = await generateLoanCode();
+      let codeExist = await Loan.exists({
+        code: loanCode.code
+      });
+      if (!codeExist) {
+        loanCreate = await Loan.create({
+          code: loanCode.code,
+          customerId
+        });
+        break;
+      } else {
+        await Setting.updateOne(
+          {
+            name: "loanCode"
+          },
+          {
+            $inc: {
+              "value.number": 1
+            }
+          }
+        );
+      }
+    }
 
+    console.log(req.body);
     res.send({
       code: 0,
       message: successCodeMessage({ code: 3 }),
@@ -173,6 +275,7 @@ async function loanCreatePost(req, res, next) {
     return res.send(error(500));
   }
 }
+
 module.exports = {
   index,
   apply,

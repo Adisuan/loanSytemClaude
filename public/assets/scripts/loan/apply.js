@@ -1,5 +1,6 @@
 const typeNames = { personal: "สินเชื่อบุคคล", business: "สินเชื่อธุรกิจ", home: "สินเชื่อบ้าน", car: "สินเชื่อรถยนต์" };
 let fpDateOfBirth;
+let customerSelectedItem = null;
 $(document).ready(function () {
   initSelect2({ select: ".select-select2" });
   initSelect2({ select: "#namePrefix" });
@@ -179,7 +180,7 @@ const customerFields = {
   phone: document.getElementById("phone"),
   email: document.getElementById("email"),
   address: document.getElementById("address"),
-  occupation: document.getElementById("occupation"),
+  occupationId: document.getElementById("occupationId"),
   companyName: document.getElementById("companyName"),
   companyAddress: document.getElementById("companyAddress"),
   income: document.getElementById("income"),
@@ -422,9 +423,9 @@ $(document).on("click", "#btnCreate", function () {
   }
 
   // ===== การงาน / รายได้ =====
-  let occupation = $("#occupation").val();
-  if (!occupation || occupation.length === 0) {
-    $("#occupation").focus();
+  let occupationId = $("#occupationId").val();
+  if (!occupationId || occupationId.length === 0) {
+    $("#occupationId").focus();
     sweetAlert2Toast({
       icon: "warning",
       text: "กรุณาเลือกอาชีพ",
@@ -445,8 +446,11 @@ $(document).on("click", "#btnCreate", function () {
     });
     return false;
   }
+  income = Number(income);
   let incomeOther = $("#incomeOther").val() || 0;
+  incomeOther = Number(incomeOther);
   let debt = $("#debt").val() || 0;
+  debt = Number(debt);
 
   // ===== รายละเอียดสินเชื่อ =====
   let loanType = $("#loanType").val();
@@ -471,7 +475,7 @@ $(document).on("click", "#btnCreate", function () {
     });
     return false;
   }
-
+  loanAmount = Number(loanAmount);
   let loanTerm = $("#loanTerm").val();
   if (!loanTerm || loanTerm.length === 0) {
     $("#loanTerm").focus();
@@ -482,14 +486,24 @@ $(document).on("click", "#btnCreate", function () {
     });
     return false;
   }
+  loanTerm = Number(loanTerm);
   let loanRate = $("#loanRate").val();
-
+  loanRate = Number(loanRate);
+  if (loanRate.length === 0) {
+    $("#loanRate").focus();
+    sweetAlert2Toast({
+      icon: "warning",
+      text: "กรุณาระบุอัตราดอกเบี้ย (%/ปี)",
+      confirmButtonClass: "btn btn-danger waves-effect waves-light"
+    });
+    return false;
+  }
   // ===== หลักค้ำประกัน (เฉพาะตอน toggle เปิด) =====
   let hasCollateral = $("#hasCollateral").is(":checked");
   let collateralMode = null;
   let collateralType = null;
   let collateralValue = null;
-  let existingCollateralId = null;
+  let collateralId = null;
 
   if (hasCollateral) {
     collateralMode = $("#collateralMode").val();
@@ -534,7 +548,7 @@ $(document).on("click", "#btnCreate", function () {
     contentType: "application/json",
     data: JSON.stringify({
       customerMode,
-      existingCustomerId,
+      customerId: null,
       namePrefix,
       firstName,
       lastName,
@@ -544,7 +558,7 @@ $(document).on("click", "#btnCreate", function () {
       phone,
       email,
       address,
-      occupation,
+      occupationId,
       companyName,
       companyAddress,
       income,
@@ -559,17 +573,29 @@ $(document).on("click", "#btnCreate", function () {
       collateralMode,
       collateralType,
       collateralValue,
-      existingCollateralId
+      collateralId
     }),
     success: function (response) {
       if (response.code == 0) {
-        sweetAlert2Toast("success", response.message);
+        sweetAlert2Toast({
+          icon: "success",
+          text: response.message,
+          confirmButtonClass: "btn btn-danger waves-effect waves-light"
+        });
       } else {
-        sweetAlert2Toast("warning", response.message);
+        sweetAlert2Toast({
+          icon: "warning",
+          text: response.message,
+          confirmButtonClass: "btn btn-danger waves-effect waves-light"
+        });
       }
     },
     error: function () {
-      sweetAlert2Toast("error", "ทำรายการไม่สำเร็จ");
+      sweetAlert2Toast({
+        icon: "error",
+        text: "ทำรายการไม่สำเร็จ",
+        confirmButtonClass: "btn btn-danger waves-effect waves-light"
+      });
     }
   });
 });

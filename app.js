@@ -13,14 +13,15 @@ const userAgent = require("express-useragent");
 const MongoStore = require("connect-mongo").default;
 
 const indexRouter = require("./routes/index");
-const loansRouter = require("./routes/loans");
-const paymentsRouter = require("./routes/payments");
-const customersRouter = require("./routes/customers");
-const collateralsRouter = require("./routes/collaterals");
-const reportsRouter = require("./routes/reports");
+const loanRouter = require("./routes/loan");
+const paymentRouter = require("./routes/payment");
+const customerRouter = require("./routes/customer");
+const collateralRouter = require("./routes/collateral");
+const reportRouter = require("./routes/report");
 const settingsRouter = require("./routes/settings");
+const authRouter = require("./routes/auth");
 
-const app = express();
+let app = express();
 app.use(userAgent.express());
 let sessionCreate = {
   cookie: {
@@ -83,12 +84,13 @@ app.use(
   })
 );
 
+app.use("/auth", authRouter);
 app.use("/", indexRouter);
-app.use("/loans", loansRouter);
-app.use("/payments", paymentsRouter);
-app.use("/customers", customersRouter);
-app.use("/collaterals", collateralsRouter);
-app.use("/reports", reportsRouter);
+app.use("/loan", loanRouter);
+app.use("/payment", paymentRouter);
+app.use("/customer", customerRouter);
+app.use("/collateral", collateralRouter);
+app.use("/report", reportRouter);
 app.use("/settings", settingsRouter);
 
 // catch 404 and forward to error handler

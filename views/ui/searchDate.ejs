@@ -1,0 +1,60 @@
+<div class="row g-6 mb-6">
+    <div class="col-sm-12 col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div class="content-left">
+                        <span class="text-heading">ค้นหา</span>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <label for="" class="form-label"></label>
+                        <div class="my-1" role="group">
+                            <% if(typeof(unSelected)!='undefined'){ %>
+                                <button type="button" data-category="today"
+                                class="btn btn-sm btn-outline-secondary waves-effect btn-date-range mt-1">วันนี้</button>
+                            <% } else{ %>
+                                <button type="button" data-category="today"
+                                class="btn btn-sm btn-outline-success waves-effect btn-date-range mt-1">วันนี้</button>
+                            <% } %>
+                            <button type="button" data-category="yesterday"
+                                class="btn btn-sm btn-outline-secondary waves-effect btn-date-range mt-1">เมื่อวานนี้</button>
+                            <% if(typeof(nextDay)!='undefined'){ %>
+                                 <button type="button" data-category="tomorrow"
+                                class="btn btn-sm btn-outline-secondary waves-effect btn-date-range mt-1">พรุ่งนี้</button>
+                            <% } %>
+                            <button type="button" data-category="week"
+                                class="btn btn-sm btn-outline-secondary waves-effect btn-date-range mt-1">สัปดาห์นี้</button>
+                            <button type="button" data-category="lastWeek"
+                                class="btn btn-sm btn-outline-secondary waves-effect btn-date-range mt-1">สัปดาห์ที่แล้ว</button>
+                            <button type="button" data-category="month"
+                                class="btn btn-sm btn-outline-secondary waves-effect btn-date-range mt-1">เดือนนี้</button>
+                            <button type="button" data-category="lastMonth"
+                                class="btn btn-sm btn-outline-secondary waves-effect btn-date-range mt-1">เดือนที่แล้ว</button>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="row">
+                            <div class="col-6 col-lg-5">
+                                <label for="startDate" class="form-label">วันที่เริ่มต้น</label>
+                                <input type="text" class="form-control" placeholder="วันที่เริ่มต้น" id="startDate"
+                                    value="" />
+                            </div>
+                            <div class="col-6 col-lg-5">
+                                <label for="endDate" class="form-label">วันที่สิ้นสุด</label>
+                                <input type="text" class="form-control" placeholder="วันที่สิ้นสุด" id="endDate"
+                                    value="" />
+                            </div>
+                            <div class="col-12 col-lg-2 d-flex align-items-center justify-content-center mt-lg-5 mt-3">
+                                <button type="button" id="btnSearchDate" class="btn btn-success waves-effect waves-light">
+                                    <span class="icon-xs icon-base fa fa-search me-2"></span>ค้นหา</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

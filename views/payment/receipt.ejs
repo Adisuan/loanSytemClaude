@@ -1,0 +1,151 @@
+<div class="d-flex align-items-center gap-3 mb-4">
+  <a href="/payment" class="btn btn-sm btn-light border"><i class="bi bi-arrow-left"></i></a>
+  <div>
+    <h5 class="mb-0 fw-700">ใบเสร็จรับเงิน</h5>
+    <p class="text-muted mb-0 fs-85">เลขที่ <%= receipt.receiptNo %></p>
+  </div>
+  <div class="ms-auto d-flex gap-2">
+    <button class="btn btn-light border" onclick="window.print()"><i class="bi bi-printer me-1"></i>พิมพ์</button>
+    <button class="btn btn-outline-primary"><i class="bi bi-envelope me-1"></i>ส่งอีเมล</button>
+    <a href="/payment/new" class="btn btn-success"><i class="bi bi-plus-circle me-1"></i>ชำระรายการถัดไป</a>
+  </div>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card" id="receiptCard">
+      <div class="card-body p-5">
+
+        <!-- Header -->
+        <div class="text-center mb-4">
+          <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+            <div class="rounded-2 bg-primary d-flex align-items-center justify-content-center text-white"
+                 style="width:38px;height:38px;font-size:1.1rem;">
+              <i class="bi bi-bank2"></i>
+            </div>
+            <span class="fw-700 fs-5 text-brand">LoanPro</span>
+          </div>
+          <div class="text-muted fs-82">ระบบสินเชื่อ · 123 ถ.สุขุมวิท กรุงเทพมหานคร 10110</div>
+          <div class="text-muted fs-80">โทร 02-xxx-xxxx · loansystem@email.com</div>
+
+          <div class="mt-3 py-2 px-4 d-inline-block rounded-3 bg-success-tint">
+            <div class="text-success fw-700" style="font-size:1.1rem;">
+              <i class="bi bi-check-circle-fill me-2"></i>ชำระเงินสำเร็จ
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <!-- Receipt No & Date -->
+        <div class="row mb-4">
+          <div class="col-6">
+            <div class="text-muted fs-78">เลขที่ใบเสร็จ</div>
+            <div class="fw-600 text-primary"><%= receipt.receiptNo %></div>
+          </div>
+          <div class="col-6 text-end">
+            <div class="text-muted fs-78">วันที่ชำระ</div>
+            <div class="fw-600"><%= receipt.payDate %></div>
+          </div>
+        </div>
+
+        <!-- Borrower Info -->
+        <div class="p-3 rounded-3 mb-4 bg-surface">
+          <div class="row g-2">
+            <div class="col-md-6">
+              <div class="text-muted fs-75">ชื่อผู้กู้</div>
+              <div class="fw-500 fs-90"><%= receipt.borrower %></div>
+            </div>
+            <div class="col-md-6">
+              <div class="text-muted fs-75">เลขที่สัญญา</div>
+              <div class="fw-500 text-primary fs-90"><%= receipt.loanId %></div>
+            </div>
+            <div class="col-md-6">
+              <div class="text-muted fs-75">ประเภทสินเชื่อ</div>
+              <div class="fs-88"><%= receipt.loanType %></div>
+            </div>
+            <div class="col-md-6">
+              <div class="text-muted fs-75">งวดที่ชำระ</div>
+              <div class="fs-88">งวดที่ <%= receipt.installment %></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Breakdown -->
+        <table class="table mb-4 fs-90">
+          <thead class="table-light">
+            <tr>
+              <th>รายการ</th>
+              <th class="text-end">จำนวนเงิน (บาท)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>เงินต้น</td>
+              <td class="text-end">฿<%= receipt.principal %></td>
+            </tr>
+            <tr>
+              <td>ดอกเบี้ย</td>
+              <td class="text-end text-danger">฿<%= receipt.interest %></td>
+            </tr>
+            <% if (receipt.penalty) { %>
+            <tr>
+              <td class="text-danger">ค่าปรับล่าช้า</td>
+              <td class="text-end text-danger">฿<%= receipt.penalty %></td>
+            </tr>
+            <% } %>
+          </tbody>
+          <tfoot>
+            <tr class="table-success">
+              <th>ยอดชำระรวม</th>
+              <th class="text-end fs-6 text-success">฿<%= receipt.total %></th>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Payment Info -->
+        <div class="row g-2 mb-4">
+          <div class="col-md-6">
+            <div class="text-muted fs-75">ช่องทางการชำระ</div>
+            <div class="fs-88 fw-500"><%= receipt.channel %></div>
+          </div>
+          <% if (receipt.refNo) { %>
+          <div class="col-md-6">
+            <div class="text-muted fs-75">เลขอ้างอิง</div>
+            <div class="fs-88 fw-500"><%= receipt.refNo %></div>
+          </div>
+          <% } %>
+          <div class="col-md-6">
+            <div class="text-muted fs-75">เงินต้นคงเหลือหลังชำระ</div>
+            <div class="text-primary fw-600 fs-90">฿<%= receipt.remainBalance %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="text-muted fs-75">งวดคงเหลือ</div>
+            <div class="fs-88"><%= receipt.remainInstallments %> งวด</div>
+          </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="mb-4">
+          <div class="d-flex justify-content-between mb-1">
+            <span class="fs-83">ความคืบหน้าการผ่อน</span>
+            <span class="text-primary fw-600 fs-83">
+              <%= receipt.installment %>/<%= receipt.totalInstallments %> งวด
+            </span>
+          </div>
+          <div class="progress progress-8">
+            <div class="progress-bar bg-success"
+                 style="width:<%= Math.round(receipt.installment/receipt.totalInstallments*100) %>%"></div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="text-center text-muted fs-78">
+          ใบเสร็จนี้ออกโดยระบบอัตโนมัติ · LoanPro System<br>
+          หากมีข้อสงสัยกรุณาติดต่อ 02-xxx-xxxx
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

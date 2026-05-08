@@ -1,0 +1,171 @@
+  <!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> — ระบบสินเชื่อ</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/style.css?v<%= new Date().getTime() %>">
+  <link rel="stylesheet" href="/stylesheets/custom.css?v<%= new Date().getTime() %>">
+  <link rel="stylesheet" href="/assets/plugins/select2/dist/css/select2.css" />
+  <link rel="stylesheet" href="/assets/plugins/select2-theme/dist/select2-bootstrap-5-theme.css" />
+  <link rel="stylesheet" href="/assets/plugins/datatables-bs5/datatables.bootstrap5.css" />
+  <link rel="stylesheet" href="/assets/plugins/datatables-responsive-bs5/responsive.bootstrap5.css" />
+  <!-- <link rel="stylesheet" href="/assets/plugins/flatpickr/flatpickr.css" /> -->
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/assets/plugins/jquery/dist/jquery.min.js"></script>
+  <script src="/assets/scripts/index.js?v<%= new Date().getTime() %>"></script>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar d-flex flex-column">
+  <div class="sidebar-brand d-flex align-items-center gap-3">
+    <div class="logo-icon"><i class="bi bi-bank2"></i></div>
+    <div>
+      <div class="text-white fw-700 fs-95">LoanPro</div>
+      <div class="text-white-50 fs-75">ระบบสินเชื่อ</div>
+    </div>
+  </div>
+
+  <div class="pt-2 flex-grow-1 overflow-auto">
+    <div class="nav-section">เมนูหลัก</div>
+    <ul class="nav flex-column gap-1">
+      <li class="nav-item">
+        <a class="nav-link <% if (typeof(page)!="undefined"&&(page=="dashboard")) { %>active<% } %>" href="/">
+          <i class="bi bi-grid-1x2-fill me-2"></i> แดชบอร์ด
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <% if (typeof(page)!="undefined"&&(page=="loan/index"||page=="loan/detail")) { %>active<% } %>" href="/loan">
+          <i class="bi bi-file-earmark-text-fill me-2"></i> รายการสินเชื่อ
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <% if (typeof(page)!="undefined"&&(page=="loan/apply")) { %>active<% } %>" href="/loan/apply">
+          <i class="bi bi-plus-circle-fill me-2"></i> ยื่นขอสินเชื่อ
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <% if (typeof(page)!="undefined"&&(page=="payment/index"||page=="payment/new"||page=="payment/receipt")) { %>active<% } %>" href="/payment">
+          <i class="bi bi-cash-coin me-2"></i> การชำระเงิน
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <% if (typeof(page)!="undefined"&&(page=="collateral/index"||page=="collateral/detail"||page=="collateral/form")) { %>active<% } %>" href="/collateral">
+          <i class="bi bi-shield-fill me-2"></i> หลักประกัน
+        </a>
+      </li>
+    </ul>
+
+    <div class="nav-section">ลูกค้า</div>
+    <ul class="nav flex-column gap-1">
+      <li class="nav-item">
+        <a class="nav-link <% if (typeof(page)!="undefined"&&(page=="customer/index"||page=="customer/detail")) { %>active<% } %>" href="/customer">
+          <i class="bi bi-people-fill me-2"></i> ข้อมูลลูกค้า
+        </a>
+      </li>
+    </ul>
+
+    <div class="nav-section">รายงาน</div>
+    <ul class="nav flex-column gap-1">
+      <li class="nav-item">
+        <a class="nav-link <% if (typeof(page)!="undefined"&&(page=="report/index")) { %>active<% } %>" href="/report">
+          <i class="bi bi-graph-up-arrow me-2"></i> ศูนย์รายงาน
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <% if (typeof(page)!="undefined"&&(page=="report/summary")) { %>active<% } %>" href="/report/summary">
+          <i class="bi bi-bar-chart-line me-2"></i> สรุปสินเชื่อ
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <% if (typeof(page)!="undefined"&&(page=="report/revenue")) { %>active<% } %>" href="/report/revenue">
+          <i class="bi bi-cash-stack me-2"></i> รายรับ
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <% if (typeof(page)!="undefined"&&(page=="report/overdue")) { %>active<% } %>" href="/report/overdue">
+          <i class="bi bi-exclamation-triangle me-2"></i> หนี้ค้างชำระ
+        </a>
+      </li>
+    </ul>
+
+    <div class="nav-section">ระบบ</div>
+    <ul class="nav flex-column gap-1">
+      <li class="nav-item">
+        <a class="nav-link <% if (typeof(page)!="undefined"&&(page.indexOf("settings/")===0)) { %>active<% } %>" href="/settings">
+          <i class="bi bi-gear-fill me-2"></i> ตั้งค่า
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="p-3 border-top border-sidebar">
+    <div class="d-flex align-items-center gap-2">
+      <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white avatar-md">อด</div>
+      <div>
+        <div class="text-white fs-82 fw-600">อดิสรรณ์</div>
+        <div class="text-white-50 fs-72">ผู้ดูแลระบบ</div>
+      </div>
+      <a href="#" class="ms-auto text-white-50"><i class="bi bi-box-arrow-right"></i></a>
+    </div>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Main -->
+<div class="main-content">
+  <!-- Topbar -->
+  <div class="topbar d-flex align-items-center gap-3">
+    <button class="btn btn-sm btn-light d-lg-none border-0" id="sidebarToggle">
+      <i class="bi bi-list fs-5"></i>
+    </button>
+    <nav aria-label="breadcrumb" class="flex-grow-1">
+      <ol class="breadcrumb mb-0 fs-85">
+        <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted">หน้าหลัก</a></li>
+        <% if (typeof breadcrumb !== 'undefined') { %>
+          <li class="breadcrumb-item active"><%= breadcrumb %></li>
+        <% } %>
+      </ol>
+    </nav>
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-sm btn-light border-0 position-relative">
+        <i class="bi bi-bell"></i>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fs-60">3</span>
+      </button>
+      <div class="text-muted d-none d-sm-block fs-82">2 พ.ค. 2569</div>
+    </div>
+  </div>
+
+  <div class="p-3 p-lg-4">
+<% if (typeof(page)!="undefined") { %>
+                    <%- include(page); -%>
+   <% } %>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="/assets/plugins/flatpickr/flatpickr.js"></script>
+<script src="/assets/plugins/flatpickr/locale/th.js"></script> -->
+<script src="/assets/plugins/select2/dist/js/select2.full.min.js"></script>
+<script src="/assets/plugins/select2/dist/js/i18n/th.js"></script>
+<script src="/assets/plugins/datatables-bs5/datatables-bootstrap5.js"></script>
+<script src="/assets/plugins/moment/moment.js"></script>
+<script src="/assets/plugins/numeral/min/numeral.min.js"></script>
+
+<script>
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener('click', () => document.body.classList.toggle('sidebar-open'));
+  }
+  if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', () => document.body.classList.remove('sidebar-open'));
+  }
+</script>
+</body>
+</html>

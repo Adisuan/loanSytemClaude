@@ -1,0 +1,145 @@
+<div class="d-flex align-items-center gap-3 mb-4">
+  <a href="<%= mode === 'edit' ? '/collateral/' + item.id : '/collateral' %>" class="btn btn-sm btn-light border">
+    <i class="bi bi-arrow-left"></i>
+  </a>
+  <div>
+    <h5 class="mb-0 fw-700"><%= mode === 'edit' ? 'แก้ไขหลักประกัน' : 'เพิ่มหลักประกัน' %></h5>
+    <p class="text-muted mb-0 fs-85">
+      <%= mode === 'edit' ? 'แก้ไขข้อมูลหลักประกัน ' + item.id : 'บันทึกข้อมูลหลักประกันเข้าคลัง เพื่อนำไปผูกกับสัญญาภายหลัง' %>
+    </p>
+  </div>
+</div>
+
+<form action="<%= mode === 'edit' ? '/collateral/' + item.id + '/edit' : '/collateral/new' %>" method="POST">
+<div class="row g-4">
+  <!-- Left -->
+  <div class="col-lg-8 d-flex flex-column gap-4">
+
+    <!-- ข้อมูลหลัก -->
+    <div class="card">
+      <div class="card-body p-4">
+        <h6 class="fw-700 mb-4"><i class="bi bi-shield-fill text-primary me-2"></i>ข้อมูลหลักประกัน</h6>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label fs-85 fw-500">ประเภทหลักประกัน <span class="text-danger">*</span></label>
+            <select name="type" class="form-select" required>
+              <option value="">-- เลือกประเภท --</option>
+              <% types.forEach(t => { %>
+                <option value="<%= t.value %>" <%= item && item.type === t.value ? 'selected' : '' %>>
+                  <%= t.value %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fs-85 fw-500">มูลค่าประเมิน (บาท) <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text">฿</span>
+              <input type="text" name="estimatedValue" class="form-control"
+                     placeholder="0"
+                     value="<%= item ? item.estimatedValue : '' %>" required>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <label class="form-label fs-85 fw-500">ชื่อ / หัวข้อ <span class="text-danger">*</span></label>
+            <input type="text" name="title" class="form-control"
+                   placeholder="เช่น โฉนดที่ดิน เลขที่ 12345, iPhone 15 Pro Max 256GB"
+                   value="<%= item ? item.title : '' %>" required>
+          </div>
+          <div class="col-md-12">
+            <label class="form-label fs-85 fw-500">รายละเอียด</label>
+            <textarea name="description" class="form-control" rows="3"
+                      placeholder="ขนาด สี สภาพ เลขทะเบียน เลขตัวถัง ฯลฯ"><%= item ? item.description : '' %></textarea>
+          </div>
+          <div class="col-md-12">
+            <label class="form-label fs-85 fw-500">หมายเหตุ</label>
+            <textarea name="note" class="form-control" rows="2"
+                      placeholder="ข้อมูลเพิ่มเติม เช่น เอกสารประกอบ การรับประกัน"><%= item ? item.note : '' %></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- เอกสารแนบ -->
+    <div class="card">
+      <div class="card-body p-4">
+        <h6 class="fw-700 mb-3"><i class="bi bi-paperclip text-primary me-2"></i>เอกสารแนบ</h6>
+        <p class="text-muted fs-85 mb-3">รูปถ่าย, สำเนาเอกสาร, ใบเสร็จ ฯลฯ</p>
+        <div class="border rounded-3 p-4 text-center bg-surface">
+          <i class="bi bi-cloud-upload fs-2 text-muted d-block mb-2"></i>
+          <div class="fs-85 mb-2">ลากไฟล์มาที่นี่ หรือ</div>
+          <button type="button" class="btn btn-sm btn-light border">
+            <i class="bi bi-folder2-open me-1"></i>เลือกไฟล์
+          </button>
+          <div class="text-muted fs-75 mt-2">รองรับ JPG, PNG, PDF ขนาดไม่เกิน 5 MB</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Right -->
+  <div class="col-lg-4 d-flex flex-column gap-4">
+
+    <!-- สรุป -->
+    <div class="card">
+      <div class="card-body p-4">
+        <h6 class="fw-700 mb-3"><i class="bi bi-info-circle-fill text-primary me-2"></i>ข้อมูลสรุป</h6>
+
+        <% if (mode === 'edit' && item) { %>
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted fs-85">รหัส</span>
+              <span class="fw-600"><%= item.id %></span>
+            </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted fs-85">สถานะปัจจุบัน</span>
+              <% if (item.status === 'ว่าง') { %>
+                <span class="text-success fw-600"><%= item.status %></span>
+              <% } else if (item.status === 'ใช้ค้ำอยู่') { %>
+                <span class="text-warning fw-600"><%= item.status %></span>
+              <% } else { %>
+                <span class="text-secondary fw-600"><%= item.status %></span>
+              <% } %>
+            </div>
+            <% if (item.loanId) { %>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted fs-85">สัญญาที่ผูก</span>
+              <a href="/loan/<%= item.loanId %>" class="fw-600 text-primary text-decoration-none">
+                <%= item.loanId %>
+              </a>
+            </div>
+            <% } %>
+            <div class="d-flex justify-content-between py-2">
+              <span class="text-muted fs-85">วันที่เพิ่ม</span>
+              <span class="fw-600"><%= item.addedDate %></span>
+            </div>
+          </div>
+        <% } else { %>
+          <div class="text-muted fs-85">
+            หลักประกันที่บันทึกใหม่จะมีสถานะ <span class="text-success fw-600">"ว่าง"</span>
+            พร้อมนำไปผูกกับสัญญาในอนาคต
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- การกระทำ -->
+    <div class="card">
+      <div class="card-body p-4">
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-circle me-1"></i>
+            <%= mode === 'edit' ? 'บันทึกการแก้ไข' : 'บันทึกหลักประกัน' %>
+          </button>
+          <a href="<%= mode === 'edit' ? '/collateral/' + item.id : '/collateral' %>" class="btn btn-light border">
+            ยกเลิก
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</form>

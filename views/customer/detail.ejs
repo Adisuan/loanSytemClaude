@@ -1,0 +1,252 @@
+<!-- Header -->
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+  <div class="d-flex align-items-center gap-3">
+    <a href="/customer" class="btn btn-sm btn-light border"><i class="bi bi-arrow-left"></i></a>
+    <div>
+      <div class="d-flex align-items-center gap-2">
+        <h5 class="mb-0 fw-700"><%= customer.prefix %><%= customer.name %></h5>
+        <% if (customer.status === 'ปกติ') { %>
+          <span class="badge-status bg-success bg-opacity-15 text-success"><i class="bi bi-check-circle-fill me-1"></i>ปกติ</span>
+        <% } else if (customer.status === 'ติดตาม') { %>
+          <span class="badge-status bg-warning bg-opacity-20 text-warning"><i class="bi bi-exclamation-circle-fill me-1"></i>ติดตาม</span>
+        <% } else { %>
+          <span class="badge-status bg-danger bg-opacity-15 text-danger"><i class="bi bi-x-circle-fill me-1"></i>ค้างชำระ</span>
+        <% } %>
+      </div>
+      <div class="text-muted fs-83">รหัสลูกค้า <%= customer.id %> · ลงทะเบียน <%= customer.joinDate %></div>
+    </div>
+  </div>
+  <div class="d-flex gap-2">
+    <button class="btn btn-sm btn-light border"><i class="bi bi-printer me-1"></i>พิมพ์</button>
+    <a href="/loan/apply" class="btn btn-sm btn-primary"><i class="bi bi-plus-circle me-1"></i>ยื่นสินเชื่อใหม่</a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Left -->
+  <div class="col-lg-8 d-flex flex-column gap-4">
+
+    <!-- ข้อมูลส่วนตัว -->
+    <div class="card">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <h6 class="fw-700 mb-0"><i class="bi bi-person-circle text-primary me-2"></i>ข้อมูลส่วนตัว</h6>
+          <button class="btn btn-sm btn-light border-0"><i class="bi bi-pencil"></i></button>
+        </div>
+
+        <div class="row g-3 align-items-center mb-4">
+          <div class="col-auto">
+            <div class="rounded-circle d-flex align-items-center justify-content-center text-white avatar-xl"
+                 style="background:<%= customer.color %>;">
+              <%= customer.name.charAt(0) %>
+            </div>
+          </div>
+          <div class="col">
+            <div class="fs-6 fw-600"><%= customer.prefix %><%= customer.name %></div>
+            <div class="text-muted fs-85">
+              <i class="bi bi-phone me-1"></i><%= customer.phone %>
+              &nbsp;<i class="bi bi-envelope me-1"></i><%= customer.email %>
+            </div>
+            <div class="text-muted fs-85">
+              <i class="bi bi-geo-alt me-1"></i><%= customer.address %>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="text-muted fs-78">เลขบัตรประชาชน</div>
+            <div class="fs-88 fw-500"><%= customer.idCard %></div>
+          </div>
+          <div class="col-md-4">
+            <div class="text-muted fs-78">อาชีพ</div>
+            <div class="fs-88 fw-500"><%= customer.occupation %></div>
+          </div>
+          <div class="col-md-4">
+            <div class="text-muted fs-78">สถานที่ทำงาน</div>
+            <div class="fs-88 fw-500"><%= customer.companyName || '-' %></div>
+          </div>
+          <div class="col-md-4">
+            <div class="text-muted fs-78">รายได้ต่อเดือน</div>
+            <div class="fs-88 fw-500">฿<%= customer.income %></div>
+          </div>
+          <div class="col-md-4">
+            <div class="text-muted fs-78">สินเชื่อที่ใช้งาน</div>
+            <div class="fs-88 fw-500 text-primary"><%= customer.activeLoans %> สัญญา</div>
+          </div>
+          <div class="col-md-4">
+            <div class="text-muted fs-78">ยอดกู้รวม</div>
+            <div class="fs-88 fw-500">฿<%= customer.totalBorrowed %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- สินเชื่อ -->
+    <div class="card">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <h6 class="fw-700 mb-0"><i class="bi bi-file-earmark-text-fill text-primary me-2"></i>รายการสินเชื่อ</h6>
+          <a href="/loan/apply" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-plus me-1"></i>เพิ่ม
+          </a>
+        </div>
+        <% if (loans.length === 0) { %>
+          <div class="text-center text-muted py-4">
+            <i class="bi bi-inbox fs-2 d-block mb-2"></i>ยังไม่มีรายการสินเชื่อ
+          </div>
+        <% } else { %>
+          <div class="d-flex flex-column gap-3">
+            <% loans.forEach(loan => { %>
+            <div class="p-3 rounded-3 bg-surface d-flex align-items-center justify-content-between flex-wrap gap-2">
+              <div>
+                <div class="fs-88 fw-600">
+                  <a href="/loan/<%= loan.id %>" class="text-primary text-decoration-none"><%= loan.id %></a>
+                </div>
+                <div class="text-muted fs-78"><%= loan.type %> · อัตรา <%= loan.rate %>% · <%= loan.term %> เดือน</div>
+              </div>
+              <div class="text-end">
+                <div class="fw-700 fs-90 text-primary">฿<%= loan.amount %></div>
+                <div class="text-muted fs-75">ผ่อนแล้ว <%= loan.paid %>/<%= loan.term %> งวด</div>
+              </div>
+              <div>
+                <% if (loan.status === 'อนุมัติ') { %>
+                  <span class="badge-status bg-success bg-opacity-15 text-success"><i class="bi bi-check-circle-fill me-1"></i><%= loan.status %></span>
+                <% } else if (loan.status === 'รออนุมัติ') { %>
+                  <span class="badge-status bg-warning bg-opacity-20 text-warning"><i class="bi bi-clock-fill me-1"></i><%= loan.status %></span>
+                <% } else { %>
+                  <span class="badge-status bg-secondary bg-opacity-15 text-secondary"><%= loan.status %></span>
+                <% } %>
+              </div>
+            </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- ประวัติการชำระ -->
+    <div class="card">
+      <div class="card-body p-0">
+        <div class="d-flex align-items-center justify-content-between p-4 pb-3">
+          <h6 class="fw-700 mb-0"><i class="bi bi-clock-history text-primary me-2"></i>ประวัติการชำระล่าสุด</h6>
+          <a href="/payment?customer=<%= customer.id %>" class="btn btn-sm btn-light border">ดูทั้งหมด</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover mb-0 align-middle table-compact">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-4">งวดที่</th>
+                <th>วันที่ชำระ</th>
+                <th>ยอดชำระ</th>
+                <th>ช่องทาง</th>
+                <th>สถานะ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% payments.forEach(p => { %>
+              <tr>
+                <td class="ps-4 fw-500">งวดที่ <%= p.no %></td>
+                <td class="text-muted"><%= p.date %></td>
+                <td class="fw-600 text-success">฿<%= p.amount %></td>
+                <td>
+                  <span class="badge bg-light text-secondary border fs-75">
+                    <%= p.channel %>
+                  </span>
+                </td>
+                <td>
+                  <span class="badge-status bg-success bg-opacity-15 text-success">
+                    <i class="bi bi-check-circle-fill me-1"></i><%= p.status %>
+                  </span>
+                </td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Right -->
+  <div class="col-lg-4 d-flex flex-column gap-4">
+
+    <!-- สรุปสถิติ -->
+    <div class="card">
+      <div class="card-body p-4">
+        <h6 class="fw-700 mb-4"><i class="bi bi-bar-chart-fill text-primary me-2"></i>สรุปสถิติ</h6>
+        <div class="d-flex flex-column gap-3">
+          <div class="d-flex justify-content-between py-2 border-bottom">
+            <span class="text-muted fs-85">สินเชื่อทั้งหมด</span>
+            <span class="fw-600"><%= customer.loanCount %> สัญญา</span>
+          </div>
+          <div class="d-flex justify-content-between py-2 border-bottom">
+            <span class="text-muted fs-85">สินเชื่อที่ใช้งาน</span>
+            <span class="fw-600 text-primary"><%= customer.activeLoans %> สัญญา</span>
+          </div>
+          <div class="d-flex justify-content-between py-2 border-bottom">
+            <span class="text-muted fs-85">ยอดกู้รวม</span>
+            <span class="fw-600">฿<%= customer.totalBorrowed %></span>
+          </div>
+          <div class="d-flex justify-content-between py-2 border-bottom">
+            <span class="text-muted fs-85">รายได้ต่อเดือน</span>
+            <span class="fw-600">฿<%= customer.income %></span>
+          </div>
+          <div class="d-flex justify-content-between py-2">
+            <span class="text-muted fs-85">สถานะลูกค้า</span>
+            <% if (customer.status === 'ปกติ') { %>
+              <span class="text-success fw-600"><%= customer.status %></span>
+            <% } else if (customer.status === 'ติดตาม') { %>
+              <span class="text-warning fw-600"><%= customer.status %></span>
+            <% } else { %>
+              <span class="text-danger fw-600"><%= customer.status %></span>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ข้อมูลติดต่อ -->
+    <div class="card">
+      <div class="card-body p-4">
+        <h6 class="fw-700 mb-3"><i class="bi bi-telephone-fill text-primary me-2"></i>ข้อมูลติดต่อ</h6>
+        <div class="d-flex flex-column gap-3">
+          <div class="d-flex align-items-start gap-2">
+            <i class="bi bi-phone text-muted mt-1"></i>
+            <div>
+              <div class="text-muted fs-75">โทรศัพท์</div>
+              <div class="fs-88 fw-500"><%= customer.phone %></div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start gap-2">
+            <i class="bi bi-envelope text-muted mt-1"></i>
+            <div>
+              <div class="text-muted fs-75">อีเมล</div>
+              <div class="fs-88 fw-500"><%= customer.email %></div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start gap-2">
+            <i class="bi bi-geo-alt text-muted mt-1"></i>
+            <div>
+              <div class="text-muted fs-75">ที่อยู่</div>
+              <div class="fs-85"><%= customer.address %></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- หมายเหตุ -->
+    <div class="card">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h6 class="fw-700 mb-0"><i class="bi bi-sticky-fill text-warning me-2"></i>หมายเหตุ</h6>
+          <button class="btn btn-sm btn-light border-0"><i class="bi bi-plus"></i></button>
+        </div>
+        <div class="text-muted fs-85 fst-italic">ยังไม่มีหมายเหตุ</div>
+      </div>
+    </div>
+
+  </div>
+</div>

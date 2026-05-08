@@ -1,0 +1,590 @@
+  <link rel="stylesheet" href="/assets/plugins/flatpickr/flatpickr.css" />
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h5 class="mb-0 fw-700">ใบคำขอสินเชื่อ</h5>
+    <p class="text-muted mb-0 fs-85">กรอกข้อมูลให้ครบถ้วนเพื่อยื่นขอสินเชื่อ</p>
+  </div>
+</div>
+
+<!-- Step Indicator ปิดไว้ก่อน -->
+<div class="card mb-4 d-none">
+  <div class="card-body py-3 px-3 px-md-4">
+    <div class="d-flex align-items-center" style="overflow-x:auto;">
+      <div class="d-flex align-items-center gap-2 flex-shrink-0">
+        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-600 fs-85">
+          1</div>
+        <span class="fw-500 text-primary d-none d-sm-inline fs-88">ข้อมูลผู้กู้</span>
+      </div>
+      <div class="flex-grow-1 border-top mx-2 mx-md-3" style="border-style:dashed!important;min-width:16px;"></div>
+      <div class="d-flex align-items-center gap-2 flex-shrink-0">
+        <div
+          class="rounded-circle bg-light border text-muted d-flex align-items-center justify-content-center fw-600 fs-85">
+          2</div>
+        <span class="text-muted d-none d-sm-inline fs-88">รายละเอียดสินเชื่อ</span>
+      </div>
+      <div class="flex-grow-1 border-top mx-2 mx-md-3" style="border-style:dashed!important;min-width:16px;"></div>
+      <div class="d-flex align-items-center gap-2 flex-shrink-0">
+        <div
+          class="rounded-circle bg-light border text-muted d-flex align-items-center justify-content-center fw-600 fs-85">
+          3</div>
+        <span class="text-muted d-none d-sm-inline fs-88">เอกสารประกอบ</span>
+      </div>
+      <div class="flex-grow-1 border-top mx-2 mx-md-3" style="border-style:dashed!important;min-width:16px;"></div>
+      <div class="d-flex align-items-center gap-2 flex-shrink-0">
+        <div
+          class="rounded-circle bg-light border text-muted d-flex align-items-center justify-content-center fw-600 fs-85">
+          4</div>
+        <span class="text-muted d-none d-sm-inline fs-88">ยืนยัน</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form>
+  <div class="row g-4">
+    <!-- Left: Form -->
+    <div class="col-lg-8 d-flex flex-column gap-4">
+
+      <!-- ข้อมูลส่วนตัว -->
+      <div class="card">
+        <div class="card-body p-4">
+          <h6 class="fw-700 mb-1">
+            <i class="bi bi-person-circle text-primary me-2"></i>ข้อมูลส่วนตัวผู้กู้
+          </h6>
+          <p class="text-muted mb-4 fs-82">กรุณากรอกข้อมูลให้ตรงกับบัตรประชาชน</p>
+
+          <input type="hidden" name="customerMode" id="customerMode" value="new">
+          <input type="hidden" name="existingCustomerId" id="existingCustomerId" value="">
+
+          <!-- Mode Tabs -->
+          <ul class="nav nav-pills gap-2 mb-3" id="customerModeTabs">
+            <li class="nav-item">
+              <button type="button" class="nav-link active" data-mode="new">
+                <i class="bi bi-person-plus me-1"></i>ลูกค้าใหม่
+              </button>
+            </li>
+            <li class="nav-item">
+              <button type="button" class="nav-link" data-mode="existing">
+                <i class="bi bi-people me-1"></i>เลือกลูกค้าเดิม
+                <span class="badge bg-white text-primary ms-1"><%= existingCustomers.length %></span>
+              </button>
+            </li>
+          </ul>
+
+          <!-- Mode: เลือกลูกค้าเดิม -->
+          <div id="customerModeExisting" class="d-none mb-3">
+            <div class="input-group search-input-group mb-3">
+              <span class="input-group-text">     
+                <i class="bi bi-search text-muted"></i>
+              </span>        
+              <input type="text" class="form-control" id="customerSearch" placeholder="ค้นหาชื่อ, เลขที่สัญญา, เลขบัตร...">
+            
+            </div>
+            <!-- <div class="input-group mb-3">
+              <span class="input-group-text bg-white border-end-0">
+                <i class="bi bi-search text-muted"></i>
+              </span>
+              <input type="text" class="form-control border-start-0 ps-0" id="customerSearch"
+                placeholder="ค้นหาชื่อ / เลขบัตร / เบอร์โทร...">
+            </div> -->
+            <div class="d-flex flex-column gap-2" id="customerList" style="max-height:320px;overflow-y:auto;">
+              <% existingCustomers.forEach(cust => { %>
+                <label class="border rounded-3 p-3 d-flex align-items-center gap-3 customer-option"
+                  data-search="<%= (cust.id + ' ' + cust.name + ' ' + cust.idCard + ' ' + cust.phone).toLowerCase() %>"
+                  data-customer="<%= JSON.stringify(cust).replace(/"/g, '&quot;') %>">
+                  <input type="radio" name="pickCustomerId" value="<%= cust.id %>" class="form-check-input mt-0">
+                  <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0 customer-avatar"
+                    data-bg="<%= cust.color %>">
+                    <%= cust.name.charAt(0) %>
+                  </div>
+                  <div class="flex-grow-1">
+                    <div class="fs-88 fw-500"><%= cust.prefix %><%= cust.name %></div>
+                    <div class="text-muted fs-78">
+                      <%= cust.id %> · <%= cust.idCard %> · <%= cust.phone %>
+                    </div>
+                  </div>
+                  <div class="text-end">
+                    <div class="fs-78 text-muted"><%= cust.occupation %></div>
+                    <span class="badge bg-primary bg-opacity-15 text-primary fs-72">
+                      <%= cust.activeLoans %> สัญญา
+                    </span>
+                  </div>
+                </label>
+              <% }) %>
+            </div>
+            <div id="customerListEmpty" class="text-muted fs-85 text-center py-3 d-none">
+              ไม่พบลูกค้าที่ตรงกับคำค้นหา
+            </div>
+
+            <div id="pickedCustomerInfo" class="alert alert-success border-0 bg-success bg-opacity-10 rounded-3 fs-85 mt-3 d-none">
+              <i class="bi bi-check-circle-fill me-1"></i>
+              <span>เลือกแล้ว — ข้อมูลด้านล่างจะถูกเติมให้อัตโนมัติ ปรับแก้ได้หากต้องการ</span>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-2">
+              <label class="form-label">คำนำหน้า</label>
+              <select class="form-select" id="namePrefix" >
+                <option value="">-- เลือกคำนำหน้า --</option>
+                <optgroup label="ทั่วไป">
+                  <option value="นาย">นาย</option>
+                  <option value="นาง">นาง</option>
+                  <option value="นางสาว">นางสาว</option>
+                  <option value="เด็กชาย">เด็กชาย</option>
+                  <option value="เด็กหญิง">เด็กหญิง</option>
+                </optgroup>
+                <optgroup label="ยศทหาร / ตำรวจ">
+                  <option value="ร้อยตรี">ร้อยตรี</option>
+                  <option value="ร้อยโท">ร้อยโท</option>
+                  <option value="ร้อยเอก">ร้อยเอก</option>
+                  <option value="พันตรี">พันตรี</option>
+                  <option value="พันโท">พันโท</option>
+                  <option value="พันเอก">พันเอก</option>
+                  <option value="พลตรี">พลตรี</option>
+                  <option value="พลโท">พลโท</option>
+                  <option value="พลเอก">พลเอก</option>
+                  <option value="ร้อยตำรวจตรี">ร้อยตำรวจตรี</option>
+                  <option value="ร้อยตำรวจโท">ร้อยตำรวจโท</option>
+                  <option value="ร้อยตำรวจเอก">ร้อยตำรวจเอก</option>
+                  <option value="พันตำรวจตรี">พันตำรวจตรี</option>
+                  <option value="พันตำรวจโท">พันตำรวจโท</option>
+                  <option value="พันตำรวจเอก">พันตำรวจเอก</option>
+                  <option value="พลตำรวจตรี">พลตำรวจตรี</option>
+                </optgroup>
+                <optgroup label="วิชาชีพ / วิชาการ">
+                  <option value="ดร.">ดร.</option>
+                  <option value="ศาสตราจารย์">ศาสตราจารย์</option>
+                  <option value="รองศาสตราจารย์">รองศาสตราจารย์</option>
+                  <option value="ผู้ช่วยศาสตราจารย์">ผู้ช่วยศาสตราจารย์</option>
+                  <option value="นายแพทย์">นายแพทย์</option>
+                  <option value="แพทย์หญิง">แพทย์หญิง</option>
+                  <option value="ทันตแพทย์">ทันตแพทย์</option>
+                  <option value="ทันตแพทย์หญิง">ทันตแพทย์หญิง</option>
+                  <option value="สัตวแพทย์">สัตวแพทย์</option>
+                  <option value="สัตวแพทย์หญิง">สัตวแพทย์หญิง</option>
+                  <option value="เภสัชกร">เภสัชกร</option>
+                  <option value="เภสัชกรหญิง">เภสัชกรหญิง</option>
+                </optgroup>
+                <optgroup label="พระสงฆ์ / นักบวช">
+                  <option value="พระ">พระ</option>
+                  <option value="สามเณร">สามเณร</option>
+                </optgroup>
+              </select>
+            </div>
+            <div class="col-md-5">
+              <label class="form-label">ชื่อจริง <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="firstName" placeholder="ชื่อจริง" >
+            </div>
+            <div class="col-md-5">
+              <label class="form-label">นามสกุล <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="lastName"  placeholder="นามสกุล" >
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">เลขบัตรประชาชน <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="idCard" placeholder="x-xxxx-xxxxx-xx-x" maxlength="13" required>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">วันเกิด</label>
+              <input type="text" class="form-control" placeholder="วันเกิด" id="dateOfbirth" value="" />
+              <!-- <input type="date" class="form-control" id="dateOfbirth"> -->
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">อายุ</label>
+              <input type="number" class="form-control" id="age" placeholder="ปี" readonly>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">เบอร์โทรศัพท์ <span class="text-danger">*</span></label>
+              <input type="tel" class="form-control" id="phone" placeholder="เบอร์โทรศัพท์" >
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">อีเมล</label>
+              <input type="email" class="form-control" id="email" placeholder="example@email.com">
+            </div>
+            <div class="col-12">
+              <label class="form-label">ที่อยู่ปัจจุบัน <span class="text-danger">*</span></label>
+              <textarea class="form-control" id="address" rows="3"
+                placeholder="บ้านเลขที่ ถนน ตำบล/แขวง อำเภอ/เขต จังหวัด รหัสไปรษณีย์"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ข้อมูลการงาน / รายได้ -->
+      <div class="card">
+        <div class="card-body p-4">
+          <h6 class="fw-700 mb-1">
+            <i class="bi bi-briefcase-fill text-primary me-2"></i>ข้อมูลการงานและรายได้
+          </h6>
+          <p class="text-muted mb-4 fs-82">ใช้สำหรับพิจารณาความสามารถในการชำระหนี้</p>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">อาชีพ <span class="text-danger">*</span></label>
+              <select class="form-select" id="occupation" required>
+                <option value="">-- เลือกอาชีพ --</option>
+                <% occupation.forEach(item => { %>
+                 <option value="<%= item.id %>"><%= item?.name?.th %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">ชื่อบริษัท</label>
+              <input type="text" class="form-control" id="companyName" placeholder="เช่น บริษัท ABC จำกัด">
+            </div>
+            <div class="col-12">
+              <label class="form-label">ที่อยู่บริษัท</label>
+              <textarea class="form-control" id="companyAddress" rows="3"
+                placeholder="บ้านเลขที่ ถนน ตำบล/แขวง อำเภอ/เขต จังหวัด รหัสไปรษณีย์"></textarea>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">รายได้ต่อเดือน (บาท) <span class="text-danger">*</span></label>
+              <input type="number" class="form-control" id="income"  placeholder="0.00" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">รายได้อื่นๆ (บาท)</label>
+              <input type="number" class="form-control" id="incomeOther"  placeholder="0.00">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">ภาระหนี้ต่อเดือน (บาท)</label>
+              <input type="number" class="form-control" id="debt" placeholder="0.00">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- รายละเอียดสินเชื่อ -->
+      <div class="card">
+        <div class="card-body p-4">
+          <h6 class="fw-700 mb-1">
+            <i class="bi bi-currency-dollar text-primary me-2"></i>รายละเอียดสินเชื่อที่ต้องการ
+          </h6>
+          <p class="text-muted mb-4 fs-82">ระบุความต้องการสินเชื่อของท่าน</p>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">ประเภทสินเชื่อ <span class="text-danger">*</span></label>
+              <select class="form-select" id="loanType" required>
+                <option value="">-- เลือกประเภทสินเชื่อ --</option>
+                <option value="personal">สินเชื่อบุคคล</option>
+                <option value="business">สินเชื่อธุรกิจ</option>
+                <option value="home">สินเชื่อบ้าน</option>
+                <option value="car">สินเชื่อรถยนต์</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">วัตถุประสงค์การกู้</label>
+              <input type="text" class="form-control" id="purposeOfloan" placeholder="เช่น ลงทุนประกอบธุรกิจ, ซ่อมแซมบ้าน">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">วงเงินที่ต้องการ (บาท) <span class="text-danger">*</span></label>
+              <input type="number" class="form-control" id="loanAmount" placeholder="0" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">ระยะเวลา (เดือน) <span class="text-danger">*</span></label>
+              <select class="form-select" id="loanTerm" required>
+                <option value="">-- เลือก --</option>
+                <option value="3">3 เดือน</option>
+                <option value="6">6 เดือน</option>
+                <option value="12">12 เดือน</option>
+                <option value="24">24 เดือน</option>
+                <option value="36">36 เดือน</option>
+                <option value="48">48 เดือน</option>
+                <option value="60">60 เดือน</option>
+                <option value="120">120 เดือน</option>
+                <option value="240">240 เดือน</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">อัตราดอกเบี้ย (%/ปี)</label>
+              <input type="number" class="form-control" id="loanRate" value="7.5" step="0.1">
+            </div>
+          </div>
+
+          <!-- Loan Calculator Result -->
+          <div class="alert alert-primary border-0 mt-4 rounded-3 bg-primary-tint" id="calcResult"
+            style="display:none;">
+            <div class="row text-center">
+              <div class="col-4">
+                <div class="text-muted fs-78">ผ่อนต่อเดือน</div>
+                <div class="fw-700 text-primary fs-5" id="monthlyPayment">-</div>
+              </div>
+              <div class="col-4 border-start border-end">
+                <div class="text-muted fs-78">ดอกเบี้ยรวม</div>
+                <div class="fw-700 text-danger" id="totalInterest">-</div>
+              </div>
+              <div class="col-4">
+                <div class="text-muted fs-78">ยอดชำระรวม</div>
+                <div class="fw-700 text-dark" id="totalPayment">-</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- หลักค้ำประกัน -->
+      <div class="card">
+        <div class="card-body p-4">
+          <h6 class="fw-700 mb-1">
+            <i class="bi bi-shield-check text-primary me-2"></i>หลักค้ำประกัน
+          </h6>
+          <p class="text-muted mb-4 fs-82">ระบุหลักทรัพย์หรือสิ่งของที่ใช้เป็นหลักค้ำประกันการกู้ยืม</p>
+
+          <!-- Toggle มีหลักค้ำหรือไม่ -->
+          <div class="d-flex align-items-center gap-3 p-3 rounded-3 mb-3 bg-surface-bordered">
+            <div class="form-check form-switch mb-0">
+              <input class="form-check-input switch-lg" type="checkbox" role="switch" id="hasCollateral">
+            </div>
+            <div>
+              <div class="fw-500 fs-90">มีหลักค้ำประกัน</div>
+              <div class="text-muted fs-80">เปิดใช้งานหากต้องการระบุหลักทรัพย์ค้ำประกัน</div>
+            </div>
+          </div>
+
+          <!-- รายละเอียดหลักค้ำ (ซ่อนไว้ก่อน) -->
+          <div id="collateralDetail" style="display:none;">
+            <input type="hidden" name="collateralMode" id="collateralMode" value="new">
+
+            <!-- Mode Tabs -->
+            <ul class="nav nav-pills gap-2 mb-3" id="collateralModeTabs">
+              <li class="nav-item">
+                <button type="button" class="nav-link active" data-mode="new">
+                  <i class="bi bi-plus-circle me-1"></i>เพิ่มใหม่
+                </button>
+              </li>
+              <li class="nav-item">
+                <button type="button" class="nav-link" data-mode="existing">
+                  <i class="bi bi-archive me-1"></i>เลือกจากคลัง
+                  <span class="badge bg-white text-primary ms-1">
+                    <%= availableCollaterals.length %>
+                  </span>
+                </button>
+              </li>
+            </ul>
+
+            <!-- Mode: เลือกจากคลัง -->
+            <div id="collateralModeExisting" class="d-none">
+              <% if (availableCollaterals.length===0) { %>
+                <div class="text-center text-muted py-4 border rounded-3 bg-surface">
+                  <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                  ยังไม่มีหลักประกันที่ว่างในคลัง
+                  <div class="mt-3">
+                    <a href="/collateral/new" target="_blank" class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-plus-circle me-1"></i>ไปที่หน้าหลักประกัน
+                    </a>
+                  </div>
+                </div>
+                <% } else { %>
+                  <div class="input-group mb-3">
+                    <span class="input-group-text bg-white border-end-0">
+                      <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control border-start-0 ps-0" id="collateralSearch"
+                      placeholder="ค้นหาหลักประกัน...">
+                  </div>
+
+                  <div class="d-flex flex-column gap-2" id="collateralList">
+                    <% availableCollaterals.forEach(c=> { %>
+                      <label class="border rounded-3 p-3 d-flex align-items-center gap-3 collateral-option"
+                        data-search="<%= (c.id + ' ' + c.title + ' ' + c.type + ' ' + c.description).toLowerCase() %>">
+                        <input type="radio" name="existingCollateralId" value="<%= c.id %>"
+                          class="form-check-input mt-0">
+                        <div
+                          class="rounded d-flex align-items-center justify-content-center text-white flex-shrink-0 collateral-icon"
+                          data-bg="<%= c.color %>">
+                          <i class="bi <%= c.icon %>"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                          <div class="fs-88 fw-500">
+                            <%= c.title %>
+                          </div>
+                          <div class="text-muted fs-78">
+                            <%= c.id %> · <%= c.type %> · <%= c.description %>
+                          </div>
+                        </div>
+                        <div class="text-end">
+                          <div class="fw-700 text-primary fs-90">฿<%= c.estimatedValue %>
+                          </div>
+                          <span class="badge bg-success bg-opacity-15 text-success fs-72">
+                            <i class="bi bi-check-circle-fill me-1"></i>ว่าง
+                          </span>
+                        </div>
+                      </label>
+                      <% }) %>
+                  </div>
+                  <div id="collateralListEmpty" class="text-muted fs-85 text-center py-3 d-none">
+                    ไม่พบหลักประกันที่ตรงกับคำค้นหา
+                  </div>
+                  <% } %>
+            </div>
+
+            <!-- Mode: เพิ่มใหม่ -->
+            <div id="collateralModeNew">
+              <div class="alert alert-info border-0 bg-info bg-opacity-10 rounded-3 fs-85">
+                <i class="bi bi-info-circle me-1"></i>
+                หลักประกันใหม่จะถูกบันทึกเข้าคลัง และผูกกับสัญญานี้โดยอัตโนมัติเมื่อยื่นคำขอ
+              </div>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">ประเภทหลักค้ำประกัน <span class="text-danger">*</span></label>
+                  <select class="form-select" id="collateralType" name="collateralType">
+                    <option value="">-- เลือกประเภท --</option>
+                    <option value="land">ที่ดิน / โฉนดที่ดิน</option>
+                    <option value="house">บ้าน / อาคาร</option>
+                    <option value="car">รถยนต์</option>
+                    <option value="motorcycle">รถจักรยานยนต์</option>
+                    <option value="phone">โทรศัพท์มือถือ</option>
+                    <option value="electronics">เครื่องใช้ไฟฟ้า</option>
+                    <option value="jewelry">ทองคำ / เครื่องประดับ</option>
+                    <option value="other">อื่นๆ</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">มูลค่าประเมิน (บาท)</label>
+                  <input type="number" class="form-control" name="collateralValue" id="collateralValue"
+                    placeholder="0.00">
+                </div>
+
+                <!-- ฟิลด์เพิ่มเติมตามประเภท -->
+                <div class="col-12" id="collateralExtraFields">
+                  <!-- ที่ดิน / บ้าน -->
+                  <div id="extra-land" class="row g-3" style="display:none;">
+                    <div class="col-md-6">
+                      <label class="form-label">เลขที่โฉนด / เลขที่ดิน</label>
+                      <input type="text" class="form-control" name="collateral_doc_no" placeholder="เลขที่โฉนด">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">ที่ตั้ง</label>
+                      <input type="text" class="form-control" name="collateral_location"
+                        placeholder="ตำบล/แขวง อำเภอ/เขต จังหวัด">
+                    </div>
+                  </div>
+                  <!-- รถยนต์ / มอเตอร์ไซค์ -->
+                  <div id="extra-vehicle" class="row g-3" style="display:none;">
+                    <div class="col-md-4">
+                      <label class="form-label">ยี่ห้อ / รุ่น</label>
+                      <input type="text" class="form-control" name="collateral_vehicle_model"
+                        placeholder="เช่น Toyota Camry">
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">ทะเบียนรถ</label>
+                      <input type="text" class="form-control" name="collateral_plate" placeholder="กก 1234">
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">ปีจดทะเบียน</label>
+                      <input type="number" class="form-control" name="collateral_year" placeholder="เช่น 2563">
+                    </div>
+                  </div>
+                  <!-- อื่นๆ -->
+                  <div id="extra-other" style="display:none;">
+                    <label class="form-label">รายละเอียด</label>
+                    <input type="text" class="form-control" name="collateral_desc"
+                      placeholder="อธิบายรายละเอียดหลักค้ำประกัน">
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label">หมายเหตุเพิ่มเติม</label>
+                  <textarea class="form-control" rows="2" name="collateral_note"
+                    placeholder="ข้อมูลเพิ่มเติมเกี่ยวกับหลักค้ำประกัน"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- เอกสารแนบ -->
+      <div class="card">
+        <div class="card-body p-4">
+          <h6 class="fw-700 mb-1">
+            <i class="bi bi-paperclip text-primary me-2"></i>เอกสารประกอบการพิจารณา
+          </h6>
+          <p class="text-muted mb-4 fs-82">รองรับไฟล์ PDF, JPG, PNG ขนาดไม่เกิน 10MB ต่อไฟล์</p>
+
+          <div class="row g-3">
+            <% const docs=[ { key: 'id_card' , label: 'สำเนาบัตรประชาชน' , required: true }, { key: 'house_reg' ,
+              label: 'สำเนาทะเบียนบ้าน' , required: true }, { key: 'slip' , label: 'สลิปเงินเดือน / หลักฐานรายได้' ,
+              required: true }, { key: 'bank_stmt' , label: 'Statement บัญชีธนาคาร 6 เดือน' , required: false }, ] %>
+              <% docs.forEach(doc=> { %>
+                <div class="col-md-6">
+                  <label class="form-label">
+                    <%= doc.label %>
+                      <% if (doc.required) { %><span class="text-danger">*</span>
+                        <% } %>
+                  </label>
+                  <div class="border rounded-3 p-3 text-center"
+                    style="border-style:dashed!important;cursor:pointer;background:#fafafa;">
+                    <i class="bi bi-cloud-upload text-muted fs-4"></i>
+                    <div class="text-muted mt-1 fs-82">คลิกหรือลากไฟล์มาวางที่นี่</div>
+                    <input type="file" class="d-none" accept=".pdf,.jpg,.jpeg,.png">
+                  </div>
+                </div>
+                <% }) %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spacer ป้องกัน content โดน floating bar ทับ -->
+      <div class="floating-action-bar-spacer"></div>
+
+      <!-- Floating Action Bar -->
+      <div class="floating-action-bar">
+        <div class="d-flex gap-2 justify-content-center align-items-center">
+          <a href="/loan" class="btn btn-light border px-4">ยกเลิก</a>
+          <button type="button" id="btnCreate" class="btn btn-primary px-5">
+            <i class="bi bi-send me-2"></i>ยื่นคำขอสินเชื่อ
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Summary -->
+    <div class="col-lg-4">
+      <div class="card position-sticky sticky-summary">
+        <div class="card-body p-4">
+          <h6 class="fw-700 mb-3">สรุปคำขอสินเชื่อ</h6>
+
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted fs-88">ประเภทสินเชื่อ</span>
+              <span class="fw-500 fs-88" id="sum-type">-</span>
+            </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted fs-88">วงเงินที่ขอ</span>
+              <span class="fw-500 text-primary fs-88" id="sum-amount">-</span>
+            </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted fs-88">ระยะเวลา</span>
+              <span class="fw-500 fs-88" id="sum-term">-</span>
+            </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted fs-88">อัตราดอกเบี้ย</span>
+              <span class="fw-500 fs-88" id="sum-rate">7.5%/ปี</span>
+            </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted fs-88">ผ่อนประมาณ</span>
+              <span class="fw-700 text-primary" id="sum-monthly">-</span>
+            </div>
+            <div class="d-flex justify-content-between py-2">
+              <span class="text-muted fs-88">หลักค้ำประกัน</span>
+              <span class="fw-500 fs-88" id="sum-collateral">ไม่มี</span>
+            </div>
+          </div>
+
+          <div class="alert alert-warning border-0 rounded-3 mt-3 p-3 bg-caution-tint">
+            <div class="d-flex gap-2">
+              <i class="bi bi-info-circle-fill text-warning mt-1 flex-shrink-0"></i>
+              <div class="fs-80">
+                อัตราดอกเบี้ยอาจเปลี่ยนแปลงตามผลการพิจารณาเครดิต การคำนวณนี้เป็นเพียงการประมาณการเบื้องต้น
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<script src="/assets/plugins/flatpickr/flatpickr.js"></script>
+<script src="/assets/plugins/flatpickr/locale/th.js"></script>
+<script src="/assets/scripts/loan/apply.js?v<%= new Date().getTime() %>"></script>

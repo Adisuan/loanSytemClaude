@@ -1,0 +1,350 @@
+<div class="d-flex align-items-center gap-3 mb-4">
+  <a href="/payment" class="btn btn-sm btn-light border"><i class="bi bi-arrow-left"></i></a>
+  <div>
+    <h5 class="mb-0 fw-700">บันทึกการชำระเงิน</h5>
+    <p class="text-muted mb-0 fs-85">กรอกรายละเอียดการชำระค่างวดสินเชื่อ</p>
+  </div>
+</div>
+
+<form action="/payment/new" method="POST" id="paymentForm">
+<div class="row g-4">
+
+  <!-- Left: Form -->
+  <div class="col-lg-8 d-flex flex-column gap-4">
+
+    <!-- ค้นหาสินเชื่อ -->
+    <div class="card">
+      <div class="card-body p-4">
+        <h6 class="fw-700 mb-1">
+          <i class="bi bi-search text-primary me-2"></i>ค้นหาสินเชื่อ
+        </h6>
+        <p class="text-muted mb-3 fs-82">ระบุเลขที่สัญญาหรือชื่อผู้กู้เพื่อดึงข้อมูล</p>
+        <div class="row g-2 align-items-end">
+          <div class="col-md-8">
+            <label class="form-label">เลขที่สัญญา / ชื่อ-นามสกุลผู้กู้ <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+              <input type="text" class="form-control" id="loanSearch" name="loanId"
+                     placeholder="เช่น LN-2025-0001 หรือ สมชาย ใจดี"
+                     value="<%= selectedLoanId || '' %>" required>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <button type="button" class="btn btn-outline-primary w-100" id="btnSearch">
+              <i class="bi bi-search me-1"></i>ค้นหา
+            </button>
+          </div>
+        </div>
+
+        <!-- ผลลัพธ์สินเชื่อ -->
+        <div id="loanInfo" class="mt-3 p-3 rounded-3 border bg-surface" style="display:<%= selectedLoanId ? '' : 'none' %>;">
+          <div class="row g-3 align-items-center">
+            <div class="col-auto">
+              <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-700 avatar-lg"
+                   style="background:#3b82f6;" id="loanAvatar">ส</div>
+            </div>
+            <div class="col">
+              <div class="fw-600" id="loanBorrower">สมชาย ใจดี</div>
+              <div class="text-muted fs-80">
+                <span id="loanIdDisplay">LN-2025-0001</span> ·
+                <span id="loanTypeDisplay">สินเชื่อบุคคล</span>
+              </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+              <div class="text-muted fs-78">ค่างวดต่อเดือน</div>
+              <div class="fw-700 text-primary fs-5" id="loanMonthly">฿4,625.90</div>
+            </div>
+          </div>
+          <hr class="my-3">
+          <div class="row g-2 text-center">
+            <div class="col-3">
+              <div class="text-muted fs-74">วงเงินรวม</div>
+              <div class="fw-600 fs-88" id="loanAmount">฿150,000</div>
+            </div>
+            <div class="col-3">
+              <div class="text-muted fs-74">งวดที่ต้องชำระ</div>
+              <div class="fw-600 text-warning fs-88" id="loanNextInstallment">งวดที่ 13</div>
+            </div>
+            <div class="col-3">
+              <div class="text-muted fs-74">ครบกำหนด</div>
+              <div class="fw-600 fs-88" id="loanDueDate">01/05/2568</div>
+            </div>
+            <div class="col-3">
+              <div class="text-muted fs-74">เงินต้นคงเหลือ</div>
+              <div class="fw-600 text-danger fs-88" id="loanBalance">฿106,402.18</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- รายละเอียดการชำระ -->
+    <div class="card">
+      <div class="card-body p-4">
+        <h6 class="fw-700 mb-1">
+          <i class="bi bi-cash-coin text-primary me-2"></i>รายละเอียดการชำระเงิน
+        </h6>
+        <p class="text-muted mb-4 fs-82">กรอกยอดและช่องทางการชำระเงิน</p>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">ยอดชำระ (บาท) <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text">฿</span>
+              <input type="number" class="form-control" id="payAmount" name="amount"
+                     placeholder="0.00" step="0.01" required>
+            </div>
+            <div class="form-text text-muted">ค่างวดปกติ: <span id="hintMonthly">฿4,625.90</span></div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">วันที่ชำระ <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" name="payDate"
+                   value="<%= today %>" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">ช่องทางการชำระ <span class="text-danger">*</span></label>
+            <select class="form-select" name="channel" id="channelSelect" required>
+              <option value="">-- เลือกช่องทาง --</option>
+              <option value="cash">💵 เงินสด (Counter)</option>
+              <option value="transfer">🏦 โอนเงิน / PromptPay</option>
+              <option value="qr">📱 QR Code</option>
+              <option value="atm">🏧 ATM</option>
+              <option value="auto">🔄 หักบัญชีอัตโนมัติ</option>
+            </select>
+          </div>
+
+          <div class="col-md-6" id="refRow">
+            <label class="form-label">เลขอ้างอิง / เลขที่โอน</label>
+            <input type="text" class="form-control" name="refNo" placeholder="เช่น REF20250502001">
+          </div>
+
+          <!-- Transfer Details -->
+          <div class="col-12" id="transferDetail" style="display:none;">
+            <div class="p-3 rounded-3 border bg-primary-tint">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label fs-85">ธนาคารที่โอน</label>
+                  <select class="form-select form-select-sm" name="fromBank">
+                    <option>กรุงเทพ (BBL)</option>
+                    <option>กสิกรไทย (KBANK)</option>
+                    <option>ไทยพาณิชย์ (SCB)</option>
+                    <option>กรุงไทย (KTB)</option>
+                    <option>ออมสิน (GSB)</option>
+                    <option>ทหารไทยธนชาต (TTB)</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fs-85">เวลาโอน</label>
+                  <input type="time" class="form-control form-control-sm" name="transferTime">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">หมายเหตุ</label>
+            <textarea class="form-control" name="note" rows="2" placeholder="บันทึกเพิ่มเติม (ถ้ามี)"></textarea>
+          </div>
+        </div>
+
+        <!-- ยอดชำระพิเศษ -->
+        <div class="mt-3">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="extraPayment" name="extra">
+            <label class="form-check-label fs-88" for="extraPayment">
+              ชำระมากกว่าค่างวด (ตัดเงินต้นพิเศษ)
+            </label>
+          </div>
+          <div id="extraDetail" class="mt-2 p-3 rounded-3 bg-success-tint" style="display:none;">
+            <div class="row g-2">
+              <div class="col-md-6">
+                <label class="form-label fs-83">ยอดตัดเงินต้นพิเศษ (บาท)</label>
+                <input type="number" class="form-control form-control-sm" name="extraAmount" placeholder="0.00">
+              </div>
+              <div class="col-md-6 d-flex align-items-end">
+                <div class="text-success fs-82">
+                  <i class="bi bi-info-circle me-1"></i>จะช่วยลดระยะเวลาผ่อนและดอกเบี้ยรวม
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ปุ่ม -->
+    <div class="d-flex gap-2 justify-content-end pb-2">
+      <a href="/payment" class="btn btn-light border px-4">ยกเลิก</a>
+      <button type="submit" class="btn btn-success px-5" id="btnSubmit">
+        <i class="bi bi-check-circle me-2"></i>ยืนยันการชำระเงิน
+      </button>
+    </div>
+  </div>
+
+  <!-- Right: Summary -->
+  <div class="col-lg-4">
+    <div class="position-sticky sticky-summary">
+
+      <!-- สรุปการชำระ -->
+      <div class="card mb-3">
+        <div class="card-body p-4">
+          <h6 class="fw-700 mb-3">สรุปการชำระเงิน</h6>
+          <div class="d-flex flex-column gap-2">
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted fs-88">เลขที่สัญญา</span>
+              <span class="fs-88 fw-500" id="sum-loanId">-</span>
+            </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted fs-88">งวดที่ชำระ</span>
+              <span class="fs-88 fw-500" id="sum-installment">-</span>
+            </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted fs-88">เงินต้น</span>
+              <span class="fs-88" id="sum-principal">-</span>
+            </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted fs-88">ดอกเบี้ย</span>
+              <span class="fs-88 text-red" id="sum-interest">-</span>
+            </div>
+            <div class="d-flex justify-content-between py-2">
+              <span class="fw-600 fs-90">ยอดชำระรวม</span>
+              <span class="fw-700 text-success fs-6" id="sum-total">฿0.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ใบเสร็จล่าสุด -->
+      <div class="card">
+        <div class="card-body p-4">
+          <h6 class="fw-600 mb-3">ชำระล่าสุด (สัญญานี้)</h6>
+          <div class="d-flex flex-column gap-2" id="recentPayments">
+            <div class="d-flex justify-content-between align-items-center fs-83">
+              <span class="text-muted">งวดที่ 12 · 01/04/2568</span>
+              <span class="text-success fw-500">฿4,625.90</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center fs-83">
+              <span class="text-muted">งวดที่ 11 · 01/03/2568</span>
+              <span class="text-success fw-500">฿4,625.90</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center fs-83">
+              <span class="text-muted">งวดที่ 10 · 01/02/2568</span>
+              <span class="text-success fw-500">฿4,625.90</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+
+<script>
+function fmt(n) {
+  return Number(n).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// Mock loan data
+const mockLoans = {
+  'LN-2025-0001': { borrower:'สมชาย ใจดี',    type:'สินเชื่อบุคคล',  amount:150000,   rate:7.5,  term:36,  paid:12, color:'#3b82f6' },
+  'LN-2025-0002': { borrower:'วิไล มีทอง',    type:'สินเชื่อบ้าน',   amount:2500000,  rate:4.5,  term:240, paid:8,  color:'#8b5cf6' },
+  'LN-2025-0003': { borrower:'ประเสริฐ สุขสม', type:'สินเชื่อธุรกิจ', amount:800000,   rate:6.5,  term:60,  paid:20, color:'#10b981' },
+  'LN-2025-0007': { borrower:'นิรันดร์ ทองคำ', type:'สินเชื่อธุรกิจ', amount:1200000,  rate:6.0,  term:60,  paid:15, color:'#0ea5e9' },
+  'LN-2025-0008': { borrower:'พัชรา เจริญสุข', type:'สินเชื่อบ้าน',   amount:3200000,  rate:3.99, term:300, paid:2,  color:'#d946ef' },
+};
+
+function calcSchedule(P, annualRate, n) {
+  const r = annualRate / 100 / 12;
+  const M = r > 0 ? P * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1) : P/n;
+  let bal = P;
+  const rows = [];
+  for (let i = 1; i <= n; i++) {
+    const interest = bal * r;
+    const principal = M - interest;
+    bal -= principal;
+    rows.push({ no:i, interest, principal, payment:M, balance: Math.max(0, bal) });
+  }
+  return rows;
+}
+
+let currentLoan = null;
+
+function loadLoan(id) {
+  const data = mockLoans[id.trim().toUpperCase()] || mockLoans[id.trim()];
+  if (!data) { alert('ไม่พบสัญญา: ' + id); return; }
+
+  const schedule = calcSchedule(data.amount, data.rate, data.term);
+  const nextNo = data.paid + 1;
+  const nextRow = schedule[nextNo - 1];
+
+  // Calculate outstanding balance
+  let bal = data.amount;
+  for (let i = 0; i < data.paid; i++) {
+    const r = data.rate / 100 / 12;
+    const M = r > 0 ? data.amount * r * Math.pow(1+r,data.term) / (Math.pow(1+r,data.term)-1) : data.amount/data.term;
+    bal -= (M - bal * r);
+  }
+
+  currentLoan = { id: id.trim().toUpperCase(), ...data, nextNo, nextRow, balance: bal };
+
+  // Update UI
+  document.getElementById('loanAvatar').textContent = data.borrower.charAt(0);
+  document.getElementById('loanAvatar').style.background = data.color;
+  document.getElementById('loanBorrower').textContent = data.borrower;
+  document.getElementById('loanIdDisplay').textContent = id.trim().toUpperCase();
+  document.getElementById('loanTypeDisplay').textContent = data.type;
+  document.getElementById('loanMonthly').textContent = '฿' + fmt(nextRow.payment);
+  document.getElementById('loanAmount').textContent = '฿' + fmt(data.amount);
+  document.getElementById('loanNextInstallment').textContent = 'งวดที่ ' + nextNo;
+  document.getElementById('loanDueDate').textContent = '01/' + String(4 + nextNo).padStart(2,'0') + '/2568';
+  document.getElementById('loanBalance').textContent = '฿' + fmt(Math.max(0, bal));
+  document.getElementById('hintMonthly').textContent = '฿' + fmt(nextRow.payment);
+  document.getElementById('payAmount').value = nextRow.payment.toFixed(2);
+  document.getElementById('loanInfo').style.display = '';
+
+  // Summary
+  document.getElementById('sum-loanId').textContent = id.trim().toUpperCase();
+  document.getElementById('sum-installment').textContent = 'งวดที่ ' + nextNo;
+  updateSummary();
+}
+
+document.getElementById('btnSearch').addEventListener('click', function() {
+  loadLoan(document.getElementById('loanSearch').value);
+});
+document.getElementById('loanSearch').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); loadLoan(this.value); }
+});
+
+document.getElementById('payAmount').addEventListener('input', updateSummary);
+
+function updateSummary() {
+  if (!currentLoan) return;
+  const total = parseFloat(document.getElementById('payAmount').value) || 0;
+  const interest = currentLoan.nextRow ? currentLoan.nextRow.interest : 0;
+  const principal = total - interest;
+  document.getElementById('sum-principal').textContent = principal > 0 ? '฿' + fmt(principal) : '-';
+  document.getElementById('sum-interest').textContent = interest > 0 ? '฿' + fmt(interest) : '-';
+  document.getElementById('sum-total').textContent = '฿' + fmt(total);
+}
+
+// Channel toggle
+document.getElementById('channelSelect').addEventListener('change', function() {
+  const show = ['transfer', 'qr', 'atm'].includes(this.value);
+  document.getElementById('transferDetail').style.display = show ? '' : 'none';
+});
+
+// Extra payment toggle
+document.getElementById('extraPayment').addEventListener('change', function() {
+  document.getElementById('extraDetail').style.display = this.checked ? '' : 'none';
+  if (this.checked && currentLoan) {
+    const extra = document.getElementById('payAmount').value;
+  }
+});
+
+// Auto-load if query param
+<% if (selectedLoanId) { %>
+window.addEventListener('DOMContentLoaded', function() { loadLoan('<%= selectedLoanId %>'); });
+<% } %>
+</script>

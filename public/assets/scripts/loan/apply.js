@@ -1,4 +1,5 @@
-const typeNames = { personal: "สินเชื่อบุคคล", business: "สินเชื่อธุรกิจ", home: "สินเชื่อบ้าน", car: "สินเชื่อรถยนต์" };
+const loanTypeNames = { personal: "สินเชื่อบุคคล", business: "สินเชื่อธุรกิจ", home: "สินเชื่อบ้าน", car: "สินเชื่อรถยนต์" };
+let loanTypeKey = Object.fromEntries(loanType.map((item) => [item.id, item]));
 let fpDateOfBirth;
 let customerSelectedItem = null;
 $(document).ready(function () {
@@ -21,31 +22,43 @@ function fmt(n) {
 }
 
 function calcLoan() {
-  const P = parseFloat(document.getElementById("loanAmount").value) || 0;
-  const n = parseInt(document.getElementById("loanTerm").value) || 0;
-  const r = (parseFloat(document.getElementById("loanRate").value) || 0) / 100 / 12;
-  const type = document.getElementById("loanType").value;
+  let loanAmount = parseFloat(document.getElementById("loanAmount").value) || 0;
+  let loanTerm = parseInt(document.getElementById("loanTerm").value) || 12;
+  let loanRate = parseFloat(document.getElementById("loanRate").value) || 0;
+  let loanTypeId = document.getElementById("loanTypeId").value;
+  let summary = calculateLoan({
+    principal: loanAmount,
+    annualRate: loanRate,
+    months: loanTerm
+  });
+  $("#sumType").html(loanTypeKey[loanTypeId]?.name?.th || "-");
+  $("#sumAmount").html(loanAmount ? "฿" + numeral(loanAmount).format("0,0.00") : "-");
+  $("#sumTerm").html(loanTerm ? loanTerm + " เดือน" : "-");
+  $("#sumRate").html(loanRate + "%/ปี");
+  // document.getElementById("sumType").html() = typeNames[type] || "-";
+  // document.getElementById("sumAmount").textContent = P ? "฿" + fmt(P) : "-";
+  // document.getElementById("sum-term").textContent = n ? n + " เดือน" : "-";
+  // document.getElementById("sumRate").textContent = document.getElementById("loanRate").value + "%/ปี";
 
-  document.getElementById("sum-type").textContent = typeNames[type] || "-";
-  document.getElementById("sum-amount").textContent = P ? "฿" + fmt(P) : "-";
-  document.getElementById("sum-term").textContent = n ? n + " เดือน" : "-";
-  document.getElementById("sum-rate").textContent = document.getElementById("loanRate").value + "%/ปี";
-
-  if (P && n && r) {
-    const M = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-    const total = M * n;
-    const interest = total - P;
-    document.getElementById("monthlyPayment").textContent = "฿" + fmt(M);
-    document.getElementById("totalInterest").textContent = "฿" + fmt(interest);
-    document.getElementById("totalPayment").textContent = "฿" + fmt(total);
-    document.getElementById("sum-monthly").textContent = "฿" + fmt(M) + "/เดือน";
-    document.getElementById("calcResult").style.display = "";
-  }
+  // if (P && n && r) {
+  //   const M = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+  //   const total = M * n;
+  //   const interest = total - P;
+  //   document.getElementById("monthlyPayment").textContent = "฿" + fmt(M);
+  //   document.getElementById("totalInterest").textContent = "฿" + fmt(interest);
+  //   document.getElementById("totalPayment").textContent = "฿" + fmt(total);
+  //   document.getElementById("sumMonthly").textContent = "฿" + fmt(M) + "/เดือน";
+  //   document.getElementById("calcResult").style.display = "";
+  // }
+  $("#calcResult").show();
+  $("#sumMonthly,#monthlyPayment").html(`฿${numeral(summary.monthlyPayment).format("0,0.00")}`);
+  $(".total-interest").html(`฿${numeral(summary.totalInterest).format("0,0.00")}`);
+  $(".total-payment").html(`฿${numeral(summary.totalPayment).format("0,0.00")}`);
 }
 
-["loanAmount", "loanTerm", "loanRate", "loanType"].forEach((id) => {
+["loanAmount", "loanTerm", "loanRate", "loanTypeId"].forEach((id) => {
   document.getElementById(id).addEventListener("input", calcLoan);
-  document.getElementById(id).addEventListener("change", calcLoan);
+  // document.getElementById(id).addEventListener("change", calcLoan);
 });
 
 // หลักค้ำประกัน toggle
@@ -269,12 +282,12 @@ document.querySelectorAll("#customerModeTabs button[data-mode]").forEach((btn) =
 
     if (mode === "new") {
       // clear selection + fields
-      const checked = document.querySelector('input[name="pickCustomerId"]:checked');
-      if (checked) checked.checked = false;
-      existingCustomerIdInput.value = "";
-      pickedCustomerInfo.classList.add("d-none");
-      document.querySelectorAll(".customer-option").forEach((l) => l.classList.remove("border-primary", "bg-primary-tint"));
-      clearCustomerFields();
+      // const checked = document.querySelector('input[name="pickCustomerId"]:checked');
+      // if (checked) checked.checked = false;
+      // existingCustomerIdInput.value = "";
+      // pickedCustomerInfo.classList.add("d-none");
+      // document.querySelectorAll(".customer-option").forEach((l) => l.classList.remove("border-primary", "bg-primary-tint"));
+      // clearCustomerFields();
     }
   });
 });
@@ -453,9 +466,9 @@ $(document).on("click", "#btnCreate", function () {
   debt = Number(debt);
 
   // ===== รายละเอียดสินเชื่อ =====
-  let loanType = $("#loanType").val();
-  if (!loanType || loanType.length === 0) {
-    $("#loanType").focus();
+  let loanTypeId = $("#loanTypeId").val();
+  if (!loanTypeId || loanTypeId.length === 0) {
+    $("#loanTypeId").focus();
     sweetAlert2Toast({
       icon: "warning",
       text: "กรุณาเลือกประเภทสินเชื่อ",
@@ -564,7 +577,7 @@ $(document).on("click", "#btnCreate", function () {
       income,
       incomeOther,
       debt,
-      loanType,
+      loanTypeId,
       purposeOfloan,
       loanAmount,
       loanTerm,
@@ -604,4 +617,15 @@ $(document).on("change", "#dateOfbirth", function () {
   let val = $(this).val();
   let dob = parseFlexibleDate(val);
   $("#age").val(calcAgeFromDate(dob));
+});
+$("#loanTypeId").on("select2:select", async function (e) {
+  let $this = $(this);
+  let value = $this.val();
+  let data = $this.find(":selected").data();
+  if (value) {
+    $("#loanRate").val(numeral(data.rate).format("0.00"));
+    calcLoan();
+  } else {
+    $("#loanRate").val("");
+  }
 });

@@ -37,6 +37,9 @@ function shuffleArray(arr) {
   }
   return arr;
 }
+function round2(num) {
+  return Math.round((num + Number.EPSILON) * 100) / 100;
+}
 
 module.exports = {
   isValidPassword,
@@ -44,5 +47,8 @@ module.exports = {
   generateCode,
   hasEng,
   isBetweenTime,
-  shuffleArray
+  shuffleArray,
+  calculatePMT,
+  calculateLoan,
+  generateAmortizationSchedule
 };

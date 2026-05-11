@@ -92,7 +92,12 @@ function calcAgeFromDate(dob) {
   let today = new Date();
   let age = today.getFullYear() - dob.getFullYear();
   let mDiff = today.getMonth() - dob.getMonth();
-  if (mDiff < 0 || (mDiff === 0 && today.getDate() < dob.getDate())) age--;
+  if (mDiff < 0 || (mDiff === 0 && today.getDate() < dob.getDate())) {
+    age--;
+  }
+  if (age == -1) {
+    age = 0;
+  }
   return age >= 0 ? age : "";
 }
 $(document).on("keypress", ".number", function (e) {

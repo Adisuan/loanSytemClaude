@@ -202,10 +202,8 @@ body {
 }
 
 .search-input-group:focus-within {
-
   border-color: #0d6efd;
-
-  box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
+  /* box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25); */
 
 }
 
@@ -584,6 +582,22 @@ body {
   font-weight: 700;
   background: #eff6ff;
   border-bottom-color: #2563eb;
+}
+
+.status-tab-label {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.status-tab-label::after {
+  content: attr(data-label);
+  font-weight: 700;
+  height: 0;
+  visibility: hidden;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
 }
 
 .status-tab.active .badge {

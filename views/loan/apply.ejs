@@ -264,12 +264,15 @@
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">ประเภทสินเชื่อ <span class="text-danger">*</span></label>
-              <select class="form-select select-select2" id="loanType" >
-                <option value="">-- เลือกประเภทสินเชื่อ --</option>
-                <option value="personal" selected>สินเชื่อบุคคล</option>
+              <select class="form-select select-select2" id="loanTypeId" >
+                <option value="" >-- เลือกประเภทสินเชื่อ --</option>
+                <% loanType.forEach(item => { %>
+                 <option data-rate="<%= item.rate %>" value="<%= item.id %>" selected><%= item?.name.th %></option>
+                <% }) %>
+                <!-- <option value="personal" selected>สินเชื่อบุคคล</option>
                 <option value="business">สินเชื่อธุรกิจ</option>
                 <option value="home">สินเชื่อบ้าน</option>
-                <option value="car">สินเชื่อรถยนต์</option>
+                <option value="car">สินเชื่อรถยนต์</option> -->
               </select>
             </div>
             <div class="col-md-6">
@@ -284,8 +287,11 @@
               <label class="form-label">ระยะเวลา (เดือน) <span class="text-danger">*</span></label>
               <select class="form-select" id="loanTerm" required>
                 <option value="">-- เลือก --</option>
+                <option value="1">1 เดือน</option>
+                <option value="2">2 เดือน</option>
                 <option value="3">3 เดือน</option>
                 <option value="6">6 เดือน</option>
+                <option value="8">8 เดือน</option>
                 <option value="12" selected>12 เดือน</option>
                 <option value="24">24 เดือน</option>
                 <option value="36">36 เดือน</option>
@@ -311,11 +317,11 @@
               </div>
               <div class="col-4 border-start border-end">
                 <div class="text-muted fs-78">ดอกเบี้ยรวม</div>
-                <div class="fw-700 text-danger" id="totalInterest">-</div>
+                <div class="fw-700 text-danger total-interest">-</div>
               </div>
               <div class="col-4">
                 <div class="text-muted fs-78">ยอดชำระรวม</div>
-                <div class="fw-700 text-dark" id="totalPayment">-</div>
+                <div class="fw-700 text-dark total-payment" id="totalPayment">-</div>
               </div>
             </div>
           </div>
@@ -548,23 +554,31 @@
           <div class="d-flex flex-column gap-3">
             <div class="d-flex justify-content-between py-2 border-bottom">
               <span class="text-muted fs-88">ประเภทสินเชื่อ</span>
-              <span class="fw-500 fs-88" id="sum-type">-</span>
+              <span class="fw-500 fs-88" id="sumType">-</span>
             </div>
             <div class="d-flex justify-content-between py-2 border-bottom">
               <span class="text-muted fs-88">วงเงินที่ขอ</span>
-              <span class="fw-500 text-primary fs-88" id="sum-amount">-</span>
+              <span class="fw-700 text-success" id="sumAmount">-</span>
             </div>
             <div class="d-flex justify-content-between py-2 border-bottom">
               <span class="text-muted fs-88">ระยะเวลา</span>
-              <span class="fw-500 fs-88" id="sum-term">-</span>
+              <span class="fw-500 fs-88" id="sumTerm">-</span>
             </div>
             <div class="d-flex justify-content-between py-2 border-bottom">
               <span class="text-muted fs-88">อัตราดอกเบี้ย</span>
-              <span class="fw-500 fs-88" id="sum-rate">7.5%/ปี</span>
+              <span class="fw-500 fs-88" id="sumRate">7.5%/ปี</span>
             </div>
             <div class="d-flex justify-content-between py-2 border-bottom">
-              <span class="text-muted fs-88">ผ่อนประมาณ</span>
-              <span class="fw-700 text-primary" id="sum-monthly">-</span>
+              <span class="text-muted fs-88">ผ่อนต่อเดือน</span>
+              <span class="fw-700 text-primary" id="sumMonthly">-</span>
+            </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted fs-88">ดอกเบี้ยรวม</span>
+              <span class="fw-700 text-danger total-interest">-</span>
+            </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted fs-88">ยอดชำระรวม</span>
+              <span class="fw-700 text-dark total-payment">-</span>
             </div>
             <div class="d-flex justify-content-between py-2">
               <span class="text-muted fs-88">หลักค้ำประกัน</span>
@@ -585,6 +599,10 @@
     </div>
   </div>
 </form>
+<script>
+  let loanType = <%- JSON.stringify(loanType) %>;
+</script>
 <script src="/assets/plugins/flatpickr/flatpickr.js"></script>
 <script src="/assets/plugins/flatpickr/locale/th.js"></script>
+<script src="/assets/scripts/loan/index.js?v<%= new Date().getTime() %>"></script>
 <script src="/assets/scripts/loan/apply.js?v<%= new Date().getTime() %>"></script>

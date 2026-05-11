@@ -13,7 +13,7 @@
   <div class="card-body p-3">
     <div class="row g-2 align-items-center">
       <div class="col-md-5">
-        <div class="input-group">
+        <div class="input-group search-input-group">
           <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
           <input type="text" class="form-control border-start-0 ps-0" placeholder="ค้นหาชื่อ, เลขที่สัญญา, เลขบัตร...">
         </div>
@@ -55,16 +55,25 @@
     { key:'closed',   label:'ปิดบัญชี',    badgeClass:'bg-secondary' },
   ];
 %>
-<nav class="status-tabs mb-3">
+<nav class="status-tabs mb-3" id="loanStatusTabs">
   <% tabs.forEach(t => {
-       const isActive = activeStatus === t.key;
-       const href = t.key === 'all' ? '/loan' : '/loan?status=' + t.key;
+       let isActive = activeStatus === t.key;
   %>
-    <a class="status-tab <%= isActive ? 'active' : '' %>" href="<%= href %>">
-      <%= t.label %> <span class="badge <%= t.badgeClass %>"><%= counts[t.key] %></span>
+    <a class="status-tab <%= isActive ? 'active' : '' %>" data-status="<%= t.key %>" role="button">
+      <span class="status-tab-label" data-label="<%= t.label %>"><%= t.label %></span>
+      <span class="badge <%= t.badgeClass %>"><%= counts[t.key] %></span>
     </a>
   <% }) %>
 </nav>
+
+<script>
+  document.getElementById("loanStatusTabs").addEventListener("click", function (e) {
+    let tab = e.target.closest(".status-tab");
+    if (!tab) return;
+    this.querySelectorAll(".status-tab").forEach(el => el.classList.remove("active"));
+    tab.classList.add("active");
+  });
+</script>
 
 <!-- Table -->
 <div class="card">

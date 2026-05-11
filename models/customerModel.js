@@ -12,7 +12,10 @@ const schema = Schema(
       middleName: { type: String, trim: true },
       lastName: { type: String, required: true }
     },
-    idCard: String,
+    idCard: {
+      type: String,
+      unique: true
+    },
     dateOfbirth: Date,
     phone: String,
     email: String,
@@ -55,7 +58,6 @@ const schema = Schema(
 schema.index({
   createdAt: 1
 });
-schema.index({ idCard: 1 });
 schema.index({ phone: 1 });
 
 const Customer = mongoose.model("Customer", schema, "customer");

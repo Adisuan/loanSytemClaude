@@ -1,13 +1,17 @@
+const moment = require("moment");
 const error = require("../src/error/error");
 const { successCodeMessage } = require("../src/code");
 const { mockLoans } = require("../data/loan");
 const { mockCollaterals, collateralTypes } = require("../data/collateral");
 const { mockCustomers } = require("../data/customer");
+const { generateCustomerCode, generateLoanCode } = require("../helpers/db");
+const { calculateLoan, generateAmortizationSchedule, verifySchedule } = require("../helpers/loanCalculator");
 const Occupation = require("../models/occupationModel");
 const Customer = require("../models/customerModel");
 const Setting = require("../models/settingModel");
 const Loan = require("../models/loanModel");
-const { generateCustomerCode, generateLoanCode } = require("../helpers/db");
+const LoanType = require("../models/loanTypeModel");
+const LoanInstallment = require("../models/loanInstallmentModel");
 
 let STATUS_MAP = {
   all: null,
@@ -51,9 +55,18 @@ async function index(req, res, next) {
 async function apply(req, res, next) {
   try {
     let availableCollaterals = mockCollaterals.filter((c) => c.status === "ว่าง");
-    let occupation = await Occupation.find({}).sort({
-      sort: 1
-    });
+    let [occupation, loanType] = await Promise.all([
+      Occupation.find({
+        isActive: true
+      }).sort({
+        sort: 1
+      }),
+      LoanType.find({
+        isActive: true
+      }).sort({
+        sort: 1
+      })
+    ]);
     return res.render("main", {
       page: "loan/apply",
       title: "ยื่นขอสินเชื่อ",
@@ -61,9 +74,11 @@ async function apply(req, res, next) {
       availableCollaterals,
       collateralTypes,
       existingCustomers: mockCustomers,
-      occupation
+      occupation,
+      loanType
     });
   } catch (e) {
+    console.log(e);
     return res.redirect("/loan");
   }
 }
@@ -153,7 +168,7 @@ async function loanCreatePost(req, res, next) {
       income,
       incomeOther,
       debt,
-      loanType,
+      loanTypeId,
       purposeOfloan,
       loanAmount,
       loanTerm,
@@ -164,6 +179,9 @@ async function loanCreatePost(req, res, next) {
       collateralValue,
       existingCollateralId
     } = req.body;
+    let currentDate = moment().startOf("day").toDate();
+    let endDate = moment(currentDate).endOf("day").toDate();
+    console.log(req.body);
     if (customerMode == "new") {
       let customer = await Customer.findOne({
         idCard
@@ -238,17 +256,46 @@ async function loanCreatePost(req, res, next) {
         );
       }
     }
-    let loanCreate = null;
     for (let index = 0; index < 99; index++) {
       let loanCode = await generateLoanCode();
       let codeExist = await Loan.exists({
         code: loanCode.code
       });
       if (!codeExist) {
-        loanCreate = await Loan.create({
-          code: loanCode.code,
-          customerId
+        let summary = calculateLoan({
+          principal: loanAmount,
+          annualRate: loanRate,
+          months: loanTerm
         });
+        let loanSchedule = generateAmortizationSchedule({
+          principal: loanAmount,
+          annualRate: loanRate,
+          months: loanTerm,
+          date: currentDate
+        });
+
+        console.log(loanSchedule);
+        return res.send(error(500));
+        let loanCreate = await Loan.create({
+          code: loanCode.code,
+          customerId,
+          loanTypeId,
+          purposeOfloan,
+          loanAmount,
+          loanTerm,
+          loanRate,
+          totalPayment: summary.totalPayment,
+          totalInterest: summary.totalInterest,
+          outstandingBalance: summary.totalPayment
+        });
+        loanSchedule = loanSchedule.map((item, index) => {
+          return {
+            loanId: loanCreate.id,
+            installmentNumber: item.number,
+            dueDate: endDate
+          };
+        });
+        await LoanInstallment.createMany(loadSchedule);
         break;
       } else {
         await Setting.updateOne(
@@ -263,8 +310,6 @@ async function loanCreatePost(req, res, next) {
         );
       }
     }
-
-    console.log(req.body);
     res.send({
       code: 0,
       message: successCodeMessage({ code: 3 }),

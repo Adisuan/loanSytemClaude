@@ -274,8 +274,8 @@ async function loanCreatePost(req, res, next) {
           date: currentDate
         });
 
-        console.log(loanSchedule);
-        return res.send(error(500));
+        // console.log(loanSchedule);
+        // return res.send(error(500));
         let loanCreate = await Loan.create({
           code: loanCode.code,
           customerId,
@@ -290,12 +290,17 @@ async function loanCreatePost(req, res, next) {
         });
         loanSchedule = loanSchedule.map((item, index) => {
           return {
+            customerId,
             loanId: loanCreate.id,
-            installmentNumber: item.number,
-            dueDate: endDate
+            installmentNumber: item.installment,
+            dueDate: item.dueDate,
+            scheduledAmount: item.payment,
+            scheduledPrincipal: item.principal,
+            scheduledInterest: item.interest,
+            remainingBalance: item.balance
           };
         });
-        await LoanInstallment.createMany(loadSchedule);
+        await LoanInstallment.insertMany(loanSchedule);
         break;
       } else {
         await Setting.updateOne(
@@ -320,10 +325,107 @@ async function loanCreatePost(req, res, next) {
     return res.send(error(500));
   }
 }
+async function loanListDataTable(req, res, next) {
+  let = { draw, length, start, search, startDate, endDate } = req.body;
+  try {
+    let { userSession } = req.session;
+    start = Number(start || 0);
+    length = Number(length || 50);
+    let searchData = {};
+    if (startDate && endDate) {
+      startDate = moment(startDate).startOf("day").format("YYYY-MM-DD HH:mm:ss");
+      startDate = moment(startDate).toDate();
+      endDate = moment(endDate).endOf("day").format("YYYY-MM-DD HH:mm:ss");
+      endDate = moment(endDate).toDate();
+    } else {
+      startDate = moment().startOf("day").format("YYYY-MM-DD HH:mm:ss");
+      endDate = moment().endOf("day").format("YYYY-MM-DD HH:mm:ss");
+      startDate = moment(startDate).toDate();
+      endDate = moment(endDate).toDate();
+    }
+    if (search && search.value != "") {
+      let searchFields = ["code", "user.username", "user.fullName", "staff.username", "amount"];
+      let escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      let escapedSearchText = escapeRegex(search.value);
+      let isNumeric = !isNaN(search.value) && search.value.trim() !== "";
+      let numericSearch = Number(search.value);
+      searchData = {
+        ...searchData,
+        $or: [
+          ...searchFields.map((field) => {
+            if (field == "amount") {
+              return isNumeric
+                ? { [field]: numericSearch } // ✅ แปลงเป็น Number
+                : {}; // skip if not numeric
+            } else {
+              return {
+                [field]: { $regex: escapedSearchText, $options: "i" }
+                // [field]: { $regex: `^${escapedSearchText}`, $options: "i" } // ใช้ `^` เพื่อให้ Index ทำงาน
+              };
+            }
+          })
+        ]
+      };
+    }
+    let [dataList] = await Promise.all([
+      Loan.aggregate([
+        // {
+        //   $addFields: {
+        //     "user.fullName": { $concat: ["$user.bank.name.fname", " ", "$user.bank.name.lname"] }
+        //   }
+        // },
+        {
+          $match: {
+            // ...searchData,
+            // staffId: {
+            //   $exists: true
+            // },
+            createdAt: {
+              $gte: startDate,
+              $lte: endDate
+            }
+          }
+        },
+        {
+          $sort: { createdAt: -1 }
+        },
+        { $skip: Number(start) },
+        { $limit: Number(length) },
+        {
+          $setWindowFields: {
+            output: {
+              totalCount: { $count: {} }
+            }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            id: "$_id",
+            createdAt: 1,
+            totalCount: 1
+          }
+        }
+      ]).allowDiskUse(true)
+    ]);
+    let data = dataList || [];
+    let countAll = data[0]?.totalCount || 0;
 
+    res.send({
+      draw,
+      recordsTotal: countAll,
+      recordsFiltered: countAll,
+      data
+    });
+  } catch (e) {
+    console.log(e);
+    res.send(error(500));
+  }
+}
 module.exports = {
   index,
   apply,
   detail,
-  loanCreatePost
+  loanCreatePost,
+  loanListDataTable
 };

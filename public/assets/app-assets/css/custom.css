@@ -1,0 +1,62 @@
+body {
+  font-family: 'Kanit', sans-serif !important;
+  padding-right: 0 !important;
+}
+
+.select2-container--bootstrap4 .select2-results__option--highlighted[aria-selected] {
+  color: #FFF !important;
+  background-color: #5897FB !important;
+}
+
+.select2-container--bootstrap4 .select2-dropdown {
+  border-color: #7367F0 !important;
+  border-width: 1px;
+  overflow-x: hidden;
+  margin-top: -1px;
+}
+
+.select2-container--bootstrap4.select2-container--focus .select2-selection,
+.select2-container--bootstrap4.select2-container--open .select2-selection {
+  border-color: #7367F0 !important;
+}
+
+.mce-flow-layout {
+  white-space: normal;
+  background-color: white !important;
+}
+
+.mce-btn-group .mce-btn {
+  border-width: 1px;
+  margin: 0;
+  margin-left: 2px;
+  /* background-color: white !important; */
+}
+
+/* .pl-1, .px-1 {
+  padding-left: 0.25rem !important;
+}
+
+.pb-1, .py-1 {
+  padding-bottom: 0.25rem !important;
+}
+
+.pr-1, .px-1 {
+  padding-right: 0.25rem !important;
+}
+
+.pt-1, .py-1 {
+  padding-top: 0.25rem !important;
+} */
+.text-red {
+  color: #FF0000;
+}
+
+.menu-icon {
+  width: 24px !important;
+  height: auto;
+}
+
+.text-transaction-status {
+  padding: 5px;
+  font-size: .9em;
+}

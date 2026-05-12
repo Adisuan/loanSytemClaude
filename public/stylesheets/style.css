@@ -418,11 +418,11 @@ body {
    ============================================================ */
 /* Custom bg-opacity values (Bootstrap default มีแค่ 10/25/50/75/100) */
 .bg-opacity-15 {
-  --bs-bg-opacity: .15;
+  --bs-bg-opacity: .15 !important;
 }
 
 .bg-opacity-20 {
-  --bs-bg-opacity: .20;
+  --bs-bg-opacity: .20 !important;;
 }
 
 .bg-primary-tint {
@@ -1116,7 +1116,19 @@ body {
   background: #f8fafc;
   border-color: #d1d5db;
 }
-
+.table-custom-color {
+  --bs-table-color: #fff;
+  --bs-table-bg: #132f58;
+  --bs-table-border-color: #484b5f;
+  --bs-table-striped-bg: #3b3f54;
+  --bs-table-striped-color: #fff;
+  --bs-table-active-bg: #404358;
+  --bs-table-active-color: #fff;
+  --bs-table-hover-bg: #3b3f54;
+  --bs-table-hover-color: #fff;
+  color: var(--bs-table-color);
+  /* border-color: var(--bs-table-border-color); */
+}
 @media (max-width: 991.98px) {
   .auth-page {
     flex-direction: column;

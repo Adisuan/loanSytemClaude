@@ -6,6 +6,10 @@ const schema = Schema(
       type: Schema.Types.ObjectId,
       index: true
     },
+    customerId: {
+      type: Schema.Types.ObjectId,
+      index: true
+    },
     installmentNumber: {
       type: Number,
       required: true // งวดที่ 1, 2, 3...

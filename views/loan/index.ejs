@@ -78,7 +78,7 @@
 <!-- Table -->
 <div class="card">
   <div class="card-body p-0">
-    <div class="table-responsive">
+    <div class="table-responsive text-nowrap">
       <table class="table table-hover mb-0 align-middle">
         <thead class="table-light">
           <tr>
@@ -162,7 +162,7 @@
       </table>
     </div>
     <!-- Pagination -->
-    <div class="d-flex align-items-center justify-content-between p-3 border-top flex-wrap gap-2">
+    <div class="d-none d-flex align-items-center justify-content-between p-3 border-top flex-wrap gap-2">
       <div class="text-muted fs-85">แสดง <%= allLoans.length %> จาก <%= counts.all %> รายการ</div>
       <nav>
         <ul class="pagination pagination-sm mb-0 gap-1">
@@ -178,3 +178,27 @@
     </div>
   </div>
 </div>
+<div class="row g-1">
+  <div class="card">
+
+      
+    <div class="text-nowrap table-responsive">
+      <table id="table" class="table table-hover table-bordered">
+        <thead class="table-custom-color2">
+          <tr>
+            <th class="text-center fs-6">เลขที่สัญญา</th>
+            <th class="text-center fs-6">ผู้กู้</th>
+            <th class="text-center fs-6">ประเภทสินเชื่อ</th>
+            <th class="text-center fs-6">วงเงิน</th>
+            <th class="text-center fs-6">อัตราดอกเบี้ย</th>
+            <th class="text-center fs-6">ระยะเวลา</th>
+            <th class="text-center fs-6">งวดที่ผ่อน</th>
+            <th class="text-center fs-6">สถานะ</th>
+            <th class="text-center fs-6">วันที่ยื่น</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+</div>
+<script src="/assets/scripts/loan/index.js?v<%= new Date().getTime() %>"></script>

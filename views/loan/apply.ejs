@@ -1,8 +1,12 @@
   <link rel="stylesheet" href="/assets/plugins/flatpickr/flatpickr.css" />
-<div class="d-flex align-items-center justify-content-between mb-4">
+<div class="apply-page-hero mb-4">
   <div>
-    <h5 class="mb-0 fw-700">ใบคำขอสินเชื่อ</h5>
-    <p class="text-muted mb-0 fs-85">กรอกข้อมูลให้ครบถ้วนเพื่อยื่นขอสินเชื่อ</p>
+    <h5 class="hero-title">ใบคำขอสินเชื่อ</h5>
+    <p class="hero-sub">กรอกข้อมูลให้ครบถ้วนเพื่อยื่นขอสินเชื่อ — ระบบจะคำนวณยอดผ่อนให้อัตโนมัติ</p>
+  </div>
+  <div class="hero-meta d-none d-md-flex">
+    <span class="dot"></span>
+    <span>บันทึกร่างอัตโนมัติ</span>
   </div>
 </div>
 
@@ -46,12 +50,15 @@
     <div class="col-lg-8 d-flex flex-column gap-4">
 
       <!-- ข้อมูลส่วนตัว -->
-      <div class="card">
-        <div class="card-body p-4">
-          <h6 class="fw-700 mb-1">
-            <i class="bi bi-person-circle text-primary me-2"></i>ข้อมูลส่วนตัวผู้กู้
-          </h6>
-          <p class="text-muted mb-4 fs-82">กรุณากรอกข้อมูลให้ตรงกับบัตรประชาชน</p>
+      <div class="card section-card">
+        <div class="section-header">
+          <div class="section-icon"><i class="bi bi-person-fill"></i></div>
+          <div>
+            <h6>ข้อมูลส่วนตัวผู้กู้</h6>
+            <div class="section-sub">กรุณากรอกข้อมูลให้ตรงกับบัตรประชาชน</div>
+          </div>
+        </div>
+        <div class="section-body">
 
           <input type="hidden" name="customerMode" id="customerMode" value="new">
           <input type="hidden" name="existingCustomerId" id="existingCustomerId" value="">
@@ -110,7 +117,7 @@
                     </span>
                   </div>
                 </label>
-              <% }) %>z
+              <% }) %>
             </div>
             <div id="customerListEmpty" class="text-muted fs-85 text-center py-3 d-none">
               ไม่พบลูกค้าที่ตรงกับคำค้นหา
@@ -211,12 +218,15 @@
       </div>
 
       <!-- ข้อมูลการงาน / รายได้ -->
-      <div class="card">
-        <div class="card-body p-4">
-          <h6 class="fw-700 mb-1">
-            <i class="bi bi-briefcase-fill text-primary me-2"></i>ข้อมูลการงานและรายได้
-          </h6>
-          <p class="text-muted mb-4 fs-82">ใช้สำหรับพิจารณาความสามารถในการชำระหนี้</p>
+      <div class="card section-card">
+        <div class="section-header">
+          <div class="section-icon icon-violet"><i class="bi bi-briefcase-fill"></i></div>
+          <div>
+            <h6>ข้อมูลการงานและรายได้</h6>
+            <div class="section-sub">ใช้สำหรับพิจารณาความสามารถในการชำระหนี้</div>
+          </div>
+        </div>
+        <div class="section-body">
 
           <div class="row g-3">
             <div class="col-md-6">
@@ -254,12 +264,15 @@
       </div>
 
       <!-- รายละเอียดสินเชื่อ -->
-      <div class="card">
-        <div class="card-body p-4">
-          <h6 class="fw-700 mb-1">
-            <i class="bi bi-currency-dollar text-primary me-2"></i>รายละเอียดสินเชื่อที่ต้องการ
-          </h6>
-          <p class="text-muted mb-4 fs-82">ระบุความต้องการสินเชื่อของท่าน</p>
+      <div class="card section-card">
+        <div class="section-header">
+          <div class="section-icon icon-success"><i class="bi bi-cash-coin"></i></div>
+          <div>
+            <h6>รายละเอียดสินเชื่อที่ต้องการ</h6>
+            <div class="section-sub">ระบุความต้องการสินเชื่อของท่าน</div>
+          </div>
+        </div>
+        <div class="section-body">
 
           <div class="row g-3">
             <div class="col-md-6">
@@ -329,12 +342,15 @@
       </div>
 
       <!-- หลักค้ำประกัน -->
-      <div class="card">
-        <div class="card-body p-4">
-          <h6 class="fw-700 mb-1">
-            <i class="bi bi-shield-check text-primary me-2"></i>หลักค้ำประกัน
-          </h6>
-          <p class="text-muted mb-4 fs-82">ระบุหลักทรัพย์หรือสิ่งของที่ใช้เป็นหลักค้ำประกันการกู้ยืม</p>
+      <div class="card section-card">
+        <div class="section-header">
+          <div class="section-icon icon-amber"><i class="bi bi-shield-fill-check"></i></div>
+          <div>
+            <h6>หลักค้ำประกัน</h6>
+            <div class="section-sub">ระบุหลักทรัพย์หรือสิ่งของที่ใช้เป็นหลักค้ำประกันการกู้ยืม</div>
+          </div>
+        </div>
+        <div class="section-body">
 
           <!-- Toggle มีหลักค้ำหรือไม่ -->
           <div class="d-flex align-items-center gap-3 p-3 rounded-3 mb-3 bg-surface-bordered">
@@ -501,12 +517,15 @@
       </div>
 
       <!-- เอกสารแนบ -->
-      <div class="card">
-        <div class="card-body p-4">
-          <h6 class="fw-700 mb-1">
-            <i class="bi bi-paperclip text-primary me-2"></i>เอกสารประกอบการพิจารณา
-          </h6>
-          <p class="text-muted mb-4 fs-82">รองรับไฟล์ PDF, JPG, PNG ขนาดไม่เกิน 10MB ต่อไฟล์</p>
+      <div class="card section-card">
+        <div class="section-header">
+          <div class="section-icon icon-rose"><i class="bi bi-paperclip"></i></div>
+          <div>
+            <h6>เอกสารประกอบการพิจารณา</h6>
+            <div class="section-sub">รองรับไฟล์ PDF, JPG, PNG ขนาดไม่เกิน 10MB ต่อไฟล์</div>
+          </div>
+        </div>
+        <div class="section-body">
 
           <div class="row g-3">
             <% const docs=[ { key: 'id_card' , label: 'สำเนาบัตรประชาชน' , required: true }, { key: 'house_reg' ,
@@ -519,12 +538,12 @@
                       <% if (doc.required) { %><span class="text-danger">*</span>
                         <% } %>
                   </label>
-                  <div class="border rounded-3 p-3 text-center"
-                    style="border-style:dashed!important;cursor:pointer;background:#fafafa;">
-                    <i class="bi bi-cloud-upload text-muted fs-4"></i>
-                    <div class="text-muted mt-1 fs-82">คลิกหรือลากไฟล์มาวางที่นี่</div>
+                  <label class="upload-zone d-block mb-0 <%= doc.required ? 'is-required' : '' %>">
+                    <div class="upload-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+                    <div class="upload-title">คลิกหรือลากไฟล์มาวางที่นี่</div>
+                    <div class="upload-hint">PDF, JPG, PNG · สูงสุด 10MB</div>
                     <input type="file" class="d-none" accept=".pdf,.jpg,.jpeg,.png">
-                  </div>
+                  </label>
                 </div>
                 <% }) %>
           </div>
@@ -547,53 +566,46 @@
 
     <!-- Right: Summary -->
     <div class="col-lg-4">
-      <div class="card position-sticky sticky-summary">
-        <div class="card-body p-4">
-          <h6 class="fw-700 mb-3">สรุปคำขอสินเชื่อ</h6>
-
-          <div class="d-flex flex-column gap-3">
-            <div class="d-flex justify-content-between py-2 border-bottom">
-              <span class="text-muted fs-88">ประเภทสินเชื่อ</span>
-              <span class="fw-500 fs-88" id="sumType">-</span>
-            </div>
-            <div class="d-flex justify-content-between py-2 border-bottom">
-              <span class="text-muted fs-88">วงเงินที่ขอ</span>
-              <span class="fw-700 text-success" id="sumAmount">-</span>
-            </div>
-            <div class="d-flex justify-content-between py-2 border-bottom">
-              <span class="text-muted fs-88">ระยะเวลา</span>
-              <span class="fw-500 fs-88" id="sumTerm">-</span>
-            </div>
-            <div class="d-flex justify-content-between py-2 border-bottom">
-              <span class="text-muted fs-88">อัตราดอกเบี้ย</span>
-              <span class="fw-500 fs-88" id="sumRate">7.5%/ปี</span>
-            </div>
-            <div class="d-flex justify-content-between py-2 border-bottom">
-              <span class="text-muted fs-88">ผ่อนต่อเดือน</span>
-              <span class="fw-700 text-primary" id="sumMonthly">-</span>
-            </div>
-            <div class="d-flex justify-content-between py-2 border-bottom">
-              <span class="text-muted fs-88">ดอกเบี้ยรวม</span>
-              <span class="fw-700 text-danger total-interest">-</span>
-            </div>
-            <div class="d-flex justify-content-between py-2 border-bottom">
-              <span class="text-muted fs-88">ยอดชำระรวม</span>
-              <span class="fw-700 text-dark total-payment">-</span>
-            </div>
-            <div class="d-flex justify-content-between py-2">
-              <span class="text-muted fs-88">หลักค้ำประกัน</span>
-              <span class="fw-500 fs-88" id="sum-collateral">ไม่มี</span>
-            </div>
+      <div class="card summary-card position-sticky sticky-summary">
+        <div class="summary-hero">
+          <div class="summary-hero-label">
+            <i class="bi bi-calendar2-check"></i>
+            <span>ผ่อนต่อเดือน (โดยประมาณ)</span>
           </div>
-
-          <div class="alert alert-warning border-0 rounded-3 mt-3 p-3 bg-caution-tint">
-            <div class="d-flex gap-2">
-              <i class="bi bi-info-circle-fill text-warning mt-1 flex-shrink-0"></i>
-              <div class="fs-80">
-                อัตราดอกเบี้ยอาจเปลี่ยนแปลงตามผลการพิจารณาเครดิต การคำนวณนี้เป็นเพียงการประมาณการเบื้องต้น
-              </div>
-            </div>
+          <div class="summary-hero-value" id="sumMonthly">-</div>
+          <div class="summary-hero-sub">คำนวณจากวงเงิน × ดอกเบี้ย × ระยะเวลา</div>
+          <div class="summary-hero-chips">
+            <span class="chip" id="sumTypeChip"><i class="bi bi-tag-fill me-1"></i><span id="sumType">เลือกประเภท</span></span>
+            <span class="chip"><i class="bi bi-percent me-1"></i><span id="sumRate">7.5%/ปี</span></span>
           </div>
+        </div>
+
+        <div class="summary-list">
+          <div class="summary-row">
+            <span class="summary-label">วงเงินที่ขอ</span>
+            <span class="summary-value is-success" id="sumAmount">-</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">ระยะเวลาผ่อน</span>
+            <span class="summary-value" id="sumTerm">-</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">ดอกเบี้ยรวม</span>
+            <span class="summary-value is-danger total-interest">-</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">ยอดชำระรวมทั้งสิ้น</span>
+            <span class="summary-value is-primary total-payment">-</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">หลักค้ำประกัน</span>
+            <span class="summary-value" id="sum-collateral">ไม่มี</span>
+          </div>
+        </div>
+
+        <div class="summary-note">
+          <i class="bi bi-info-circle-fill"></i>
+          <div>อัตราดอกเบี้ยอาจเปลี่ยนแปลงตามผลการพิจารณาเครดิต การคำนวณนี้เป็นเพียงการประมาณการเบื้องต้น</div>
         </div>
       </div>
     </div>

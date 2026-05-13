@@ -39,13 +39,34 @@ async function index(req, res, next) {
       closed: mockLoans.filter((l) => l.status === "ปิดบัญชี").length
     };
 
+    let parseAmount = (s) => parseFloat(String(s).replace(/,/g, "")) || 0;
+    let activeLoans = mockLoans.filter((l) => l.status === "อนุมัติ");
+    let totalAmount = mockLoans
+      .filter((l) => l.status === "อนุมัติ" || l.status === "ปิดบัญชี")
+      .reduce((sum, l) => sum + parseAmount(l.amount), 0);
+    let outstandingAmount = activeLoans.reduce((sum, l) => {
+      let amt = parseAmount(l.amount);
+      let remainRatio = l.term ? Math.max(0, 1 - l.paidInstallments / l.term) : 0;
+      return sum + amt * remainRatio;
+    }, 0);
+    // TODO: overdue tracking ยังไม่มีในข้อมูลจริง ใช้ heuristic ชั่วคราว (approved+progress<10%)
+    let overdueCount = activeLoans.filter((l) => l.paidInstallments / l.term < 0.1).length;
+
+    let stats = {
+      totalAmount,
+      outstandingAmount,
+      pendingCount: counts.pending,
+      overdueCount
+    };
+
     return res.render("main", {
       page: "loan/index",
       title: "รายการสินเชื่อ",
       breadcrumb: "รายการสินเชื่อ",
       allLoans: filtered,
       activeStatus: statusKey,
-      counts
+      counts,
+      stats
     });
   } catch (e) {
     return res.redirect("/");
@@ -155,6 +176,7 @@ async function loanCreatePost(req, res, next) {
       customerId,
       namePrefix,
       firstName,
+      middleName,
       lastName,
       idCard,
       dateOfbirth,
@@ -180,87 +202,88 @@ async function loanCreatePost(req, res, next) {
       existingCollateralId
     } = req.body;
     let currentDate = moment().startOf("day").toDate();
-    let endDate = moment(currentDate).endOf("day").toDate();
-    console.log(req.body);
+
     if (customerMode == "new") {
-      let customer = await Customer.findOne({
-        idCard
-      });
-      if (!customer) {
+      let existing = await Customer.findOne({ idCard });
+      let customerPayload = {
+        name: { prefix: namePrefix, firstName, middleName, lastName },
+        idCard,
+        dateOfbirth,
+        phone,
+        email,
+        address,
+        occupationId,
+        companyName,
+        companyAddress,
+        income,
+        incomeOther,
+        debt
+      };
+      if (!existing) {
         for (let index = 0; index < 99; index++) {
           let generateCode = await generateCustomerCode();
-          let customerExist = await Customer.exists({
-            code: generateCode.code
-          });
+          let customerExist = await Customer.exists({ code: generateCode.code });
           if (!customerExist) {
             let customerCreate = await Customer.create({
               code: generateCode.code,
-              name: {
-                prefix: namePrefix,
-                firstName,
-                lastName
-              },
-              idCard,
-              dateOfbirth,
-              phone,
-              email,
-              address,
-              occupationId,
-              companyName,
-              companyAddress,
-              income,
-              incomeOther,
-              debt
+              ...customerPayload
             });
-            customerId = customerCreate.id;
+            customerId = customerCreate._id;
             break;
           } else {
             await Setting.updateOne(
-              {
-                name: "customerCode"
-              },
-              {
-                $inc: {
-                  "value.number": 1
-                }
-              }
+              { name: "customerCode" },
+              { $inc: { "value.number": 1 } }
             );
           }
         }
       } else {
-        customerId = customer.id;
-        await Customer.updateOne(
-          {
-            _id: customer.id
-          },
-          {
-            $set: {
-              name: {
-                prefix: namePrefix,
-                firstName,
-                lastName
-              },
-              idCard,
-              dateOfbirth,
-              phone,
-              email,
-              address,
-              occupationId,
-              companyName,
-              companyAddress,
-              income,
-              incomeOther,
-              debt
-            }
-          }
-        );
+        customerId = existing._id;
+        await Customer.updateOne({ _id: existing._id }, { $set: customerPayload });
       }
     }
+
+    let [customerDoc, loanTypeDoc, occupationDoc] = await Promise.all([
+      Customer.findById(customerId),
+      LoanType.findById(loanTypeId),
+      occupationId ? Occupation.findById(occupationId) : null
+    ]);
+
+    if (!customerDoc || !loanTypeDoc) {
+      return res.send(error(500));
+    }
+
+    let customerSnap = {
+      id: customerDoc._id,
+      name: {
+        prefix: customerDoc.name?.prefix,
+        firstName: customerDoc.name?.firstName,
+        middleName: customerDoc.name?.middleName,
+        lastName: customerDoc.name?.lastName
+      },
+      idCard: customerDoc.idCard,
+      dateOfbirth: customerDoc.dateOfbirth,
+      phone: customerDoc.phone,
+      email: customerDoc.email,
+      address: customerDoc.address,
+      income: customerDoc.income,
+      incomeOther: customerDoc.incomeOther,
+      debt: customerDoc.debt
+    };
+    let loanTypeSnap = {
+      id: loanTypeDoc._id,
+      name: { th: loanTypeDoc.name?.th, en: loanTypeDoc.name?.en }
+    };
+    let occupationSnap = occupationDoc
+      ? {
+          id: occupationDoc._id,
+          name: { th: occupationDoc.name?.th, en: occupationDoc.name?.en }
+        }
+      : undefined;
+
     for (let index = 0; index < 99; index++) {
       let loanCode = await generateLoanCode();
-      let codeExist = await Loan.exists({
-        code: loanCode.code
-      });
+      let codeExist = await Loan.exists({ code: loanCode.code });
       if (!codeExist) {
         let summary = calculateLoan({
           principal: loanAmount,
@@ -274,12 +297,11 @@ async function loanCreatePost(req, res, next) {
           date: currentDate
         });
 
-        // console.log(loanSchedule);
-        // return res.send(error(500));
         let loanCreate = await Loan.create({
           code: loanCode.code,
-          customerId,
-          loanTypeId,
+          customer: customerSnap,
+          loanType: loanTypeSnap,
+          occupation: occupationSnap,
           purposeOfloan,
           loanAmount,
           loanTerm,
@@ -288,30 +310,22 @@ async function loanCreatePost(req, res, next) {
           totalInterest: summary.totalInterest,
           outstandingBalance: summary.totalPayment
         });
-        loanSchedule = loanSchedule.map((item, index) => {
-          return {
-            customerId,
-            loanId: loanCreate.id,
-            installmentNumber: item.installment,
-            dueDate: item.dueDate,
-            scheduledAmount: item.payment,
-            scheduledPrincipal: item.principal,
-            scheduledInterest: item.interest,
-            remainingBalance: item.balance
-          };
-        });
+        loanSchedule = loanSchedule.map((item) => ({
+          customerId,
+          loanId: loanCreate._id,
+          installmentNumber: item.installment,
+          dueDate: item.dueDate,
+          scheduledAmount: item.payment,
+          scheduledPrincipal: item.principal,
+          scheduledInterest: item.interest,
+          remainingBalance: item.balance
+        }));
         await LoanInstallment.insertMany(loanSchedule);
         break;
       } else {
         await Setting.updateOne(
-          {
-            name: "loanCode"
-          },
-          {
-            $inc: {
-              "value.number": 1
-            }
-          }
+          { name: "loanCode" },
+          { $inc: { "value.number": 1 } }
         );
       }
     }
@@ -326,90 +340,82 @@ async function loanCreatePost(req, res, next) {
   }
 }
 async function loanListDataTable(req, res, next) {
-  let = { draw, length, start, search, startDate, endDate } = req.body;
   try {
-    let { userSession } = req.session;
+    let { draw, length, start, search, startDate, endDate } = req.body;
     start = Number(start || 0);
     length = Number(length || 50);
-    let searchData = {};
+
+    let match = { deletedAt: null };
     if (startDate && endDate) {
-      startDate = moment(startDate).startOf("day").format("YYYY-MM-DD HH:mm:ss");
-      startDate = moment(startDate).toDate();
-      endDate = moment(endDate).endOf("day").format("YYYY-MM-DD HH:mm:ss");
-      endDate = moment(endDate).toDate();
-    } else {
-      startDate = moment().startOf("day").format("YYYY-MM-DD HH:mm:ss");
-      endDate = moment().endOf("day").format("YYYY-MM-DD HH:mm:ss");
-      startDate = moment(startDate).toDate();
-      endDate = moment(endDate).toDate();
-    }
-    if (search && search.value != "") {
-      let searchFields = ["code", "user.username", "user.fullName", "staff.username", "amount"];
-      let escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      let escapedSearchText = escapeRegex(search.value);
-      let isNumeric = !isNaN(search.value) && search.value.trim() !== "";
-      let numericSearch = Number(search.value);
-      searchData = {
-        ...searchData,
-        $or: [
-          ...searchFields.map((field) => {
-            if (field == "amount") {
-              return isNumeric
-                ? { [field]: numericSearch } // ✅ แปลงเป็น Number
-                : {}; // skip if not numeric
-            } else {
-              return {
-                [field]: { $regex: escapedSearchText, $options: "i" }
-                // [field]: { $regex: `^${escapedSearchText}`, $options: "i" } // ใช้ `^` เพื่อให้ Index ทำงาน
-              };
-            }
-          })
-        ]
+      match.createdAt = {
+        $gte: moment(startDate).startOf("day").toDate(),
+        $lte: moment(endDate).endOf("day").toDate()
       };
     }
-    let [dataList] = await Promise.all([
-      Loan.aggregate([
-        // {
-        //   $addFields: {
-        //     "user.fullName": { $concat: ["$user.bank.name.fname", " ", "$user.bank.name.lname"] }
-        //   }
-        // },
-        {
-          $match: {
-            // ...searchData,
-            // staffId: {
-            //   $exists: true
-            // },
-            createdAt: {
-              $gte: startDate,
-              $lte: endDate
-            }
-          }
-        },
-        {
-          $sort: { createdAt: -1 }
-        },
-        { $skip: Number(start) },
-        { $limit: Number(length) },
-        {
-          $setWindowFields: {
-            output: {
-              totalCount: { $count: {} }
-            }
-          }
-        },
-        {
-          $project: {
-            _id: 0,
-            id: "$_id",
-            createdAt: 1,
-            totalCount: 1
-          }
+    if (search && search.value) {
+      let escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      let safe = escapeRegex(search.value);
+      let isNumeric = !isNaN(search.value) && search.value.trim() !== "";
+      let or = [{ code: { $regex: safe, $options: "i" } }];
+      if (isNumeric) {
+        or.push({ loanAmount: Number(search.value) });
+      }
+      match.$or = or;
+    }
+
+    let basePipeline = [
+      { $match: match },
+      {
+        $lookup: {
+          from: "loanInstallment",
+          let: { lid: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ["$loanId", "$$lid"] },
+                deletedAt: null,
+                paidAmount: { $gt: 0 }
+              }
+            },
+            { $count: "count" }
+          ],
+          as: "paidData"
         }
-      ]).allowDiskUse(true)
-    ]);
-    let data = dataList || [];
-    let countAll = data[0]?.totalCount || 0;
+      },
+      {
+        $addFields: {
+          paidInstallments: { $ifNull: [{ $arrayElemAt: ["$paidData.count", 0] }, 0] }
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          code: 1,
+          customer: 1,
+          loanType: 1,
+          loanAmount: 1,
+          loanRate: 1,
+          loanTerm: 1,
+          paidInstallments: 1,
+          applicationStatus: 1,
+          loanStatus: 1,
+          createdAt: 1
+        }
+      }
+    ];
+
+    let [result] = await Loan.aggregate([
+      ...basePipeline,
+      {
+        $facet: {
+          data: [{ $sort: { createdAt: -1 } }, { $skip: start }, { $limit: length }],
+          count: [{ $count: "total" }]
+        }
+      }
+    ]).allowDiskUse(true);
+
+    let data = result?.data || [];
+    let countAll = result?.count?.[0]?.total || 0;
 
     res.send({
       draw,

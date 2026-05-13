@@ -41,13 +41,6 @@
   <script src="/assets/scripts/index.js?v<%= new Date().getTime() %>"></script>
 </head>
 <body>
-<script>
-  try {
-    if (localStorage.getItem('sidebarCollapsed') === '1') {
-      document.body.classList.add('sidebar-collapsed');
-    }
-  } catch (e) {}
-</script>
 
 <!-- Sidebar -->
 <nav class="sidebar d-flex flex-column">
@@ -149,7 +142,7 @@
 <div class="main-content">
   <!-- Topbar -->
   <div class="topbar d-flex align-items-center gap-3">
-    <button class="btn btn-sm btn-light border-0" id="sidebarToggle">
+    <button class="btn btn-sm btn-light d-lg-none border-0" id="sidebarToggle">
       <i class="bi bi-list fs-5"></i>
     </button>
     <nav aria-label="breadcrumb" class="flex-grow-1">
@@ -188,19 +181,8 @@
 <script>
   const sidebarToggle = document.getElementById('sidebarToggle');
   const sidebarOverlay = document.getElementById('sidebarOverlay');
-
   if (sidebarToggle) {
-    sidebarToggle.addEventListener('click', () => {
-      if (window.innerWidth >= 992) {
-        document.body.classList.toggle('sidebar-collapsed');
-        localStorage.setItem(
-          SIDEBAR_COLLAPSED_KEY,
-          document.body.classList.contains('sidebar-collapsed') ? '1' : '0'
-        );
-      } else {
-        document.body.classList.toggle('sidebar-open');
-      }
-    });
+    sidebarToggle.addEventListener('click', () => document.body.classList.toggle('sidebar-open'));
   }
   if (sidebarOverlay) {
     sidebarOverlay.addEventListener('click', () => document.body.classList.remove('sidebar-open'));

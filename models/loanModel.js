@@ -6,16 +6,54 @@ const schema = Schema(
       type: String,
       unique: true
     },
-    customerId: Schema.Types.ObjectId,
+    customer: {
+      id: Schema.Types.ObjectId,
+      name: {
+        prefix: { type: String },
+        firstName: { type: String, required: true },
+        middleName: { type: String, trim: true },
+        lastName: { type: String, required: true }
+      },
+      idCard: String,
+      dateOfbirth: Date,
+      phone: String,
+      email: String,
+      address: String,
+      income: { type: Number, default: 0 },
+      incomeOther: { type: Number, default: 0 },
+      debt: { type: Number, default: 0 }
+    },
     // name: {
     //   prefix: { type: String },
     //   firstName: { type: String, required: true },
     //   middleName: { type: String, trim: true },
     //   lastName: { type: String, required: true }
     // },
-    occupationId: Schema.Types.ObjectId,
+    occupation: {
+      id: Schema.Types.ObjectId,
+      name: {
+        th: {
+          type: String,
+          required: true
+        },
+        en: {
+          type: String
+        }
+      }
+    },
     data: {},
-    loanTypeId: Schema.Types.ObjectId,
+    loanType: {
+      id: Schema.Types.ObjectId,
+      name: {
+        th: {
+          type: String,
+          required: true
+        },
+        en: {
+          type: String
+        }
+      }
+    },
     purposeOfloan: String,
     loanAmount: {
       type: Number,

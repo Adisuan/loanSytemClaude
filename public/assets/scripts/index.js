@@ -1,3 +1,76 @@
+let allowCloseNotification = true;
+const TIME_RELOAD_TABLE = 5000 * 60;
+const CONFIG = {
+  DATA_TABLE_LANGUAGE: {
+    decimal: "",
+    emptyTable: "ไม่พบข้อมูล",
+    info: "แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ",
+    infoEmpty: "แสดง 0 ถึง 0 จาก 0 รายการ",
+    infoFiltered: "(ค้นหา จากทั้งหมด _MAX_ รายการ )",
+    infoPostFix: "",
+    thousands: ",",
+    lengthMenu: "แสดง _MENU_ รายการ",
+    loadingRecords: "Loading...",
+    processing: "กำลังค้นหาข้อมูล...",
+    search: "ค้นหา:",
+    zeroRecords: "ไม่พบข้อมูล",
+    paginate: {
+      first: "หน้าแรก",
+      last: "หน้าสุดท้าย",
+      next: "ถัดไป",
+      previous: "ย้อนกลับ"
+    },
+    aria: {
+      sortAscending: ": activate to sort column ascending",
+      sortDescending: ": activate to sort column descending"
+    }
+  },
+  WITHDRAW_AUTO_STATUS: {
+    processing: {
+      class: "badge bg-warning bg-opacity-10 text-warning rounded-3 ms-1",
+      text: "Auto กำลังทำรายการ"
+    },
+    input_pin: {
+      class: "badge bg-warning bg-opacity-10 text-warning rounded-3 ms-1",
+      text: "Auto กำลังระบุรหัส"
+    },
+    select_bank: {
+      class: "badge bg-warning bg-opacity-10 text-warning rounded-3 ms-1",
+      text: "Auto กำลังเลือกธนาคาร"
+    },
+    input_account_number: {
+      class: "badge bg-warning bg-opacity-10 text-warning rounded-3 ms-1",
+      text: "Auto กำลังระบุเลขบัญชี"
+    },
+    input_amount: {
+      class: "badge bg-warning bg-opacity-10 text-warning rounded-3 ms-1",
+      text: "Auto กำลังระบุจำนวนเงิน"
+    },
+    confirm: {
+      class: "badge bg-warning bg-opacity-10 text-warning rounded-3 ms-1",
+      text: "Auto กำลังยืนยันรายการ"
+    },
+    insufficient_funds: {
+      class: "badge bg-warning bg-opacity-10 text-warning rounded-3 ms-1",
+      text: "Auto ยอดเงินไม่เพียงพอ"
+    },
+    account_invalid: {
+      class: "badge bg-danger bg-opacity-10 text-danger rounded-3 ms-1",
+      text: "Auto บัญชีไม่ถูกต้อง"
+    },
+    completed: {
+      class: "badge bg-warning bg-opacity-10 text-warning rounded-3 ms-1",
+      text: "Auto"
+    },
+    error: {
+      class: "badge bg-danger bg-opacity-10 text-danger rounded-3 ms-1",
+      text: "Auto เกิดข้อผิดพลาด"
+    }
+  },
+  CREDIT_TRANSACTION_GROUPS: ["affiliate", "checkIn", "commission", "commissionEvent", "coupon", "refund", "wheelOfFortune", "store"]
+};
+const AVATAR_PALETTE = ["#3b82f6", "#8b5cf6", "#10b981", "#f59e0b", "#ef4444", "#6b7280", "#0ea5e9", "#d946ef"];
+const SIDEBAR_COLLAPSED_KEY = "sidebarCollapsed";
 function initSelect2({ select, modal, placeholder }) {
   let init = {
     theme: "bootstrap-5",

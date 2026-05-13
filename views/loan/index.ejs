@@ -1,11 +1,79 @@
-<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+<%
+  const fmtCompact = (n) => {
+    if (n >= 1e6) return '฿' + (n / 1e6).toFixed(2) + 'M';
+    if (n >= 1e3) return '฿' + (n / 1e3).toFixed(1) + 'K';
+    return '฿' + Math.round(n).toLocaleString('th-TH');
+  };
+%>
+
+<div class="apply-page-hero mb-4">
   <div>
-    <h5 class="mb-0 fw-700">รายการสินเชื่อ</h5>
-    <p class="text-muted mb-0 fs-85">จัดการและติดตามสินเชื่อทั้งหมด</p>
+    <h5 class="hero-title">รายการสินเชื่อ</h5>
+    <p class="hero-sub">จัดการและติดตามสินเชื่อทั้งหมดในระบบ</p>
   </div>
   <a href="/loan/apply" class="btn btn-primary">
     <i class="bi bi-plus-circle me-2"></i>ยื่นขอสินเชื่อใหม่
   </a>
+</div>
+
+<!-- Stat cards -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start justify-content-between mb-3">
+          <div class="icon-box bg-primary bg-opacity-10 text-primary">
+            <i class="bi bi-wallet2"></i>
+          </div>
+          <span class="badge bg-primary bg-opacity-15 text-primary">รวมทั้งระบบ</span>
+        </div>
+        <div class="h3 fw-700 mb-0"><%= fmtCompact(stats.totalAmount) %></div>
+        <div class="text-muted mt-1 fs-85">ยอดสินเชื่อทั้งหมด</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start justify-content-between mb-3">
+          <div class="icon-box bg-info bg-opacity-10 text-info">
+            <i class="bi bi-currency-exchange"></i>
+          </div>
+          <span class="badge bg-info bg-opacity-15 text-info">ยังผ่อนอยู่</span>
+        </div>
+        <div class="h3 fw-700 mb-0"><%= fmtCompact(stats.outstandingAmount) %></div>
+        <div class="text-muted mt-1 fs-85">ยอดคงเหลือ</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start justify-content-between mb-3">
+          <div class="icon-box bg-warning bg-opacity-10 text-warning">
+            <i class="bi bi-hourglass-split"></i>
+          </div>
+          <span class="badge bg-warning bg-opacity-15 text-warning">รอดำเนินการ</span>
+        </div>
+        <div class="h3 fw-700 mb-0"><%= stats.pendingCount.toLocaleString('th-TH') %></div>
+        <div class="text-muted mt-1 fs-85">รออนุมัติ</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start justify-content-between mb-3">
+          <div class="icon-box bg-danger bg-opacity-10 text-danger">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+          </div>
+          <span class="badge bg-danger bg-opacity-15 text-danger">ต้องติดตาม</span>
+        </div>
+        <div class="h3 fw-700 mb-0"><%= stats.overdueCount.toLocaleString('th-TH') %></div>
+        <div class="text-muted mt-1 fs-85">ค้างชำระ</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Filter & Search -->
@@ -13,9 +81,9 @@
   <div class="card-body p-3">
     <div class="row g-2 align-items-center">
       <div class="col-md-5">
-        <div class="input-group search-input-group">
-          <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-          <input type="text" class="form-control border-start-0 ps-0" placeholder="ค้นหาชื่อ, เลขที่สัญญา, เลขบัตร...">
+        <div class="search-input-group d-flex">
+          <span class="input-group-text"><i class="bi bi-search text-muted"></i></span>
+          <input type="text" class="form-control" placeholder="ค้นหาชื่อ, เลขที่สัญญา, เลขบัตร...">
         </div>
       </div>
       <div class="col-md-2">
@@ -77,128 +145,26 @@
 
 <!-- Table -->
 <div class="card">
-  <div class="card-body p-0">
-    <div class="table-responsive text-nowrap">
-      <table class="table table-hover mb-0 align-middle">
-        <thead class="table-light">
-          <tr>
-            <th class="ps-4" style="width:40px;">
-              <input type="checkbox" class="form-check-input">
-            </th>
-            <th>เลขที่สัญญา</th>
-            <th>ผู้กู้</th>
-            <th>ประเภทสินเชื่อ</th>
-            <th>วงเงิน</th>
-            <th>อัตราดอกเบี้ย</th>
-            <th>ระยะเวลา</th>
-            <th>งวดที่ผ่อน</th>
-            <th>สถานะ</th>
-            <th>วันที่ยื่น</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <% allLoans.forEach(loan => { %>
-          <tr>
-            <td class="ps-4"><input type="checkbox" class="form-check-input"></td>
-            <td>
-              <a href="/loan/<%= loan.id %>" class="text-primary fw-500 text-decoration-none">
-                <%= loan.id %>
-              </a>
-            </td>
-            <td>
-              <div class="d-flex align-items-center gap-2">
-                <div class="rounded-circle d-flex align-items-center justify-content-center text-white avatar-md flex-shrink-0"
-                     style="background:<%= loan.color %>;">
-                  <%= loan.name.charAt(0) %>
-                </div>
-                <div>
-                  <div class="fs-88 fw-500"><%= loan.name %></div>
-                  <div class="text-muted fs-78"><%= loan.phone %></div>
-                </div>
-              </div>
-            </td>
-            <td><span class="text-muted fs-88"><%= loan.type %></span></td>
-            <td class="fw-500">฿<%= loan.amount %></td>
-            <td><%= loan.rate %>%</td>
-            <td><%= loan.term %> เดือน</td>
-            <td>
-              <div class="fs-80">
-                <span class="fw-500"><%= loan.paidInstallments %></span>
-                <span class="text-muted">/ <%= loan.term %></span>
-              </div>
-              <div class="progress mt-1" style="width:80px;">
-                <div class="progress-bar bg-primary" style="width:<%= Math.round(loan.paidInstallments/loan.term*100) %>%"></div>
-              </div>
-            </td>
-            <td>
-              <% if (loan.status === 'อนุมัติ') { %>
-                <span class="badge-status bg-success bg-opacity-15 text-success"><i class="bi bi-check-circle-fill me-1"></i><%= loan.status %></span>
-              <% } else if (loan.status === 'รออนุมัติ') { %>
-                <span class="badge-status bg-warning bg-opacity-20 text-warning"><i class="bi bi-clock-fill me-1"></i><%= loan.status %></span>
-              <% } else if (loan.status === 'ปฏิเสธ') { %>
-                <span class="badge-status bg-danger bg-opacity-15 text-danger"><i class="bi bi-x-circle-fill me-1"></i><%= loan.status %></span>
-              <% } else { %>
-                <span class="badge-status bg-secondary bg-opacity-15 text-secondary"><%= loan.status %></span>
-              <% } %>
-            </td>
-            <td class="text-muted fs-85"><%= loan.date %></td>
-            <td>
-              <div class="dropdown">
-                <button class="btn btn-sm btn-light border-0" data-bs-toggle="dropdown">
-                  <i class="bi bi-three-dots"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 dropdown-menu-text">
-                  <li><a class="dropdown-item" href="/loan/<%= loan.id %>"><i class="bi bi-eye me-2"></i>ดูรายละเอียด</a></li>
-                  <li><a class="dropdown-item" href="#"><i class="bi bi-pencil me-2"></i>แก้ไข</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>ลบ</a></li>
-                </ul>
-              </div>
-            </td>
-          </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    </div>
-    <!-- Pagination -->
-    <div class="d-none d-flex align-items-center justify-content-between p-3 border-top flex-wrap gap-2">
-      <div class="text-muted fs-85">แสดง <%= allLoans.length %> จาก <%= counts.all %> รายการ</div>
-      <nav>
-        <ul class="pagination pagination-sm mb-0 gap-1">
-          <li class="page-item disabled"><a class="page-link border-0" href="#">&laquo;</a></li>
-          <li class="page-item active"><a class="page-link rounded" href="#">1</a></li>
-          <li class="page-item"><a class="page-link border-0" href="#">2</a></li>
-          <li class="page-item"><a class="page-link border-0" href="#">3</a></li>
-          <li class="page-item"><span class="page-link border-0">...</span></li>
-          <li class="page-item"><a class="page-link border-0" href="#">125</a></li>
-          <li class="page-item"><a class="page-link border-0" href="#">&raquo;</a></li>
-        </ul>
-      </nav>
-    </div>
-  </div>
-</div>
-<div class="row g-1">
-  <div class="card">
-
-      
-    <div class="text-nowrap table-responsive">
-      <table id="table" class="table table-hover table-bordered">
-        <thead class="table-custom-color2">
-          <tr>
-            <th class="text-center fs-6">เลขที่สัญญา</th>
-            <th class="text-center fs-6">ผู้กู้</th>
-            <th class="text-center fs-6">ประเภทสินเชื่อ</th>
-            <th class="text-center fs-6">วงเงิน</th>
-            <th class="text-center fs-6">อัตราดอกเบี้ย</th>
-            <th class="text-center fs-6">ระยะเวลา</th>
-            <th class="text-center fs-6">งวดที่ผ่อน</th>
-            <th class="text-center fs-6">สถานะ</th>
-            <th class="text-center fs-6">วันที่ยื่น</th>
-          </tr>
-        </thead>
-      </table>
-    </div>
+  <div class="table-responsive text-nowrap">
+    <table id="table" class="table table-hover mb-0 align-middle">
+      <thead class="table-custom-color">
+        <tr>
+          <th class="ps-4 col-checkbox">
+            <input type="checkbox" class="form-check-input">
+          </th>
+          <th class="text-center fs-6">เลขที่สัญญา</th>
+          <th class="text-center fs-6">ผู้กู้</th>
+          <th class="text-center fs-6">ประเภทสินเชื่อ</th>
+          <th class="text-center fs-6">วงเงิน</th>
+          <th class="text-center fs-6">อัตราดอกเบี้ย</th>
+          <th class="text-center fs-6">ระยะเวลา</th>
+          <th class="text-center fs-6">งวดที่ผ่อน</th>
+          <th class="text-center fs-6">สถานะ</th>
+          <th class="text-center fs-6">วันที่ยื่น</th>
+          <th class="text-center fs-6"></th>
+        </tr>
+      </thead>
+    </table>
   </div>
 </div>
 <script src="/assets/scripts/loan/index.js?v<%= new Date().getTime() %>"></script>
